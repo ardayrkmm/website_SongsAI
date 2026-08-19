@@ -1,0 +1,213 @@
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--spacing-2xl) var(--spacing-margin-desktop);
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 800px;
+}
+
+.badge {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--color-surface-container);
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-label-upper);
+  color: var(--color-on-surface-variant);
+  margin-bottom: var(--spacing-lg);
+  border: 1px solid var(--shadow-level-1);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-tertiary);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--color-tertiary);
+}
+
+.title {
+  font-size: var(--font-size-display-hero);
+  font-weight: var(--font-weight-display-hero);
+  line-height: var(--line-height-display-hero);
+  letter-spacing: var(--letter-spacing-display-hero);
+  margin: 0 0 var(--spacing-lg);
+  color: var(--color-on-surface);
+}
+
+.title span {
+  color: var(--color-secondary);
+}
+
+.desktopDescription {
+  font-size: var(--font-size-body-lg);
+  line-height: var(--line-height-body-lg);
+  color: var(--color-on-surface-variant);
+  margin: 0 0 var(--spacing-xl);
+  max-width: 600px;
+}
+
+.mobileDescription {
+  display: none;
+  font-size: var(--font-size-body-rg);
+  line-height: var(--line-height-body-rg);
+  color: var(--color-on-surface-variant);
+  margin: 0 0 var(--spacing-xl);
+}
+
+.actions {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-2xl);
+}
+
+.primaryButton, .secondaryButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: var(--radius-xl); /* Rounded pill style from image */
+  font-size: var(--font-size-body-rg);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-family-base);
+}
+
+.primaryButton {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  border: none;
+}
+
+.primaryButton:hover {
+  background-color: var(--color-primary-container);
+  box-shadow: 0 0 20px rgba(192, 193, 255, 0.4);
+}
+
+.secondaryButton {
+  background-color: transparent;
+  color: var(--color-on-surface);
+  border: 1px solid var(--color-outline-variant);
+}
+
+.secondaryButton:hover {
+  background-color: var(--color-surface-container);
+  border-color: var(--color-outline);
+}
+
+.visual {
+  width: 100%;
+  max-width: 900px;
+  margin-top: var(--spacing-xl);
+}
+
+.playerGraphic {
+  background-color: var(--color-surface-container-lowest);
+  border: 1px solid var(--shadow-level-1);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  position: relative;
+  overflow: hidden;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.desktopGraphic {
+  display: block;
+  width: 100%;
+}
+
+.waveformDesktop {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px;
+  height: 100px;
+}
+
+.bar {
+  width: 8px;
+  background-color: var(--color-secondary);
+  border-radius: 4px;
+  transition: height 0.5s ease;
+}
+
+.bar:nth-child(even) {
+  background-color: var(--color-outline-variant);
+}
+
+.mobileGraphic {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: var(--spacing-xl) var(--spacing-margin-mobile);
+  }
+
+  .badge {
+    display: flex;
+  }
+
+  .title {
+    font-size: var(--font-size-headline-lg-mobile);
+    line-height: var(--line-height-headline-lg-mobile);
+  }
+
+  .desktopDescription {
+    display: none;
+  }
+
+  .mobileDescription {
+    display: block;
+  }
+
+  .actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .primaryButton, .secondaryButton {
+    width: 100%;
+  }
+
+  .desktopGraphic {
+    display: none;
+  }
+
+  .mobileGraphic {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .waveformMobile {
+    display: flex;
+    gap: 8px;
+    height: 80px;
+  }
+
+  .mBar1, .mBar2, .mBar3, .mBar4 {
+    width: 16px;
+    border-radius: 8px;
+  }
+  
+  .mBar1 { background-color: var(--color-secondary); height: 100%; }
+  .mBar2 { background-color: var(--color-primary); height: 80%; align-self: flex-end; }
+  .mBar3 { background-color: var(--color-tertiary); height: 100%; }
+  .mBar4 { background-color: var(--color-secondary); height: 90%; }
+}
