@@ -1,8 +1,12 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import styles from './Navbar.module.css';
 import { SearchIcon, BellIcon, SettingsIcon, UserIcon } from '../ui/Icons';
 
 export const Navbar = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   return (
     <nav className={styles.navbar}>
       <div className={styles.container}>
@@ -10,9 +14,9 @@ export const Navbar = () => {
           <SearchIcon />
         </div>
         
-        <div className={styles.brand}>
+        <Link to="/" className={styles.brand} style={{ textDecoration: 'none', color: 'inherit' }}>
           SONORA AI
-        </div>
+        </Link>
 
         <div className={styles.desktopLinks}>
           <Link to="/" className={styles.active}>Home</Link>
@@ -22,15 +26,40 @@ export const Navbar = () => {
         </div>
 
         <div className={styles.actions}>
-          <button className={styles.iconButton} aria-label="Notifications">
-            <BellIcon />
-          </button>
-          <button className={`${styles.iconButton} ${styles.desktopOnly}`} aria-label="Profile">
-            <UserIcon />
-          </button>
-          <button className={`${styles.iconButton} ${styles.mobileOnly}`} aria-label="Settings">
-            <SettingsIcon />
-          </button>
+          {user ? (
+            <>
+              <button className={styles.iconButton} aria-label="Notifications" onClick={() => navigate('/dashboard')}>
+                <BellIcon />
+              </button>
+              <button className={`${styles.iconButton} ${styles.desktopOnly}`} aria-label="Profile" onClick={() => navigate('/profile')}>
+                <UserIcon />
+              </button>
+              <button className={`${styles.iconButton} ${styles.mobileOnly}`} aria-label="Settings" onClick={() => navigate('/settings')}>
+                <SettingsIcon />
+              </button>
+            </>
+          ) : (
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button 
+                onClick={() => navigate('/login')}
+                style={{
+                  background: 'transparent', border: 'none', color: 'var(--color-on-surface)',
+                  padding: '8px 16px', borderRadius: '24px', cursor: 'pointer', fontWeight: 500, fontSize: '14px'
+                }}
+              >
+                Log In
+              </button>
+              <button 
+                onClick={() => navigate('/register')}
+                style={{
+                  background: 'var(--color-primary)', border: 'none', color: 'white',
+                  padding: '8px 20px', borderRadius: '24px', cursor: 'pointer', fontWeight: 500, fontSize: '14px'
+                }}
+              >
+                Sign Up
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </nav>

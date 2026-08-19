@@ -1,8 +1,10 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styles from './HeroSection.module.css';
 import { BarChartIcon, CompassIcon } from '../../components/ui/Icons';
 
 export const HeroSection = () => {
+  const navigate = useNavigate();
+
   return (
     <section className={styles.hero}>
       <div className={styles.content}>
@@ -23,12 +25,12 @@ export const HeroSection = () => {
         </p>
         
         <div className={styles.actions}>
-          <Link to="/analyze" className={styles.primaryButton}>
+          <button onClick={() => navigate('/analyze')} className={styles.primaryButton}>
             <BarChartIcon /> Analyze a Song
-          </Link>
-          <Link to="/explore" className={styles.secondaryButton}>
+          </button>
+          <button onClick={() => navigate('/explore')} className={styles.secondaryButton}>
             <CompassIcon /> Explore Music
-          </Link>
+          </button>
         </div>
       </div>
       
