@@ -40,7 +40,14 @@ export const ProcessingPage = () => {
             const trackId = track?.id || 'blinding-lights';
             
             // 1. Get Features
-            const features = getAudioFeaturesForTrack(trackId);
+            let features;
+            if (track?.features) {
+              // Use REAL features straight from the dataset!
+              features = track.features;
+            } else {
+              // Fallback
+              features = getAudioFeaturesForTrack(trackId);
+            }
             
             // 2. TFJS Prediction Inference
             predictionService.predict(features).then(predictionResult => {
