@@ -133,3 +133,42 @@ export const getTrendingTracks = async (): Promise<SpotifyTrack[]> => {
     return [];
   }
 };
+
+export const getRecommendationsByArtist = async (artistName: string, limit = 3): Promise<SpotifyTrack[]> => {
+  const token = await getAccessToken();
+  
+  if (!token) {
+    return [
+      { id: 'rec-1', name: 'Similar Track 1', artist: artistName, album: 'Album', coverUrl: '', previewUrl: null, durationMs: 200000 },
+      { id: 'rec-2', name: 'Similar Track 2', artist: artistName, album: 'Album', coverUrl: '', previewUrl: null, durationMs: 200000 },
+      { id: 'rec-3', name: 'Similar Track 3', artist: artistName, album: 'Album', coverUrl: '', previewUrl: null, durationMs: 200000 },
+    ];
+  }
+
+  try {
+    const response = await fetch(`https://api.spotify.com/v1/search?q=artist:${encodeURIComponent(artistName)}&type=track&limit=${limit + 5}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const data = await response.json();
+    if (data.tracks && data.tracks.items) {
+      // Shuffle slightly and pick requested limit to give variety
+      const items = data.tracks.items.sort(() => 0.5 - Math.random()).slice(0, limit);
+      return items.map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        artist: item.artists.map((a: any) => a.name).join(', '),
+        album: item.album.name,
+        coverUrl: item.album.images[0]?.url || '',
+        previewUrl: item.preview_url,
+        durationMs: item.duration_ms
+      }));
+    }
+    return [];
+  } catch (error) {
+    console.error('Error fetching recommendations:', error);
+    return [];
+  }
+};

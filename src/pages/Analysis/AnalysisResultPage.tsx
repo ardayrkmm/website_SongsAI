@@ -3,11 +3,14 @@ import { Link, useLocation } from 'react-router-dom';
 import { getAnalysisResult } from '../../services/db/analysisService';
 import type { AnalysisRecord } from '../../services/db/analysisService';
 import { toggleFavoriteSong, checkIsFavorited } from '../../services/db/musicService';
+import { getRecommendationsByArtist } from '../../services/api/spotifyService';
+import type { SpotifyTrack } from '../../services/api/spotifyService';
 import { useAuth } from '../../contexts/AuthContext';
 import styles from './AnalysisResultPage.module.css';
 
 export const AnalysisResultPage = () => {
   const [data, setData] = useState<AnalysisRecord | null>(null);
+  const [similarTracks, setSimilarTracks] = useState<SpotifyTrack[]>([]);
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
   const location = useLocation();
@@ -26,6 +29,8 @@ export const AnalysisResultPage = () => {
             const fav = await checkIsFavorited(user.uid, result.trackId);
             setIsFavorite(fav);
           }
+          const recs = await getRecommendationsByArtist(result.artistName, 3);
+          setSimilarTracks(recs);
         }
       }
       setLoading(false);
@@ -194,27 +199,27 @@ export const AnalysisResultPage = () => {
       <section className={styles.similarSection}>
         <h2>Songs with similar Music DNA</h2>
         <div className={styles.similarList}>
-          {[
-            { title: "Save Your Tears", artist: "The Weeknd", match: "94%" },
-            { title: "Take On Me", artist: "a-ha", match: "88%" },
-            { title: "Midnight City", artist: "M83", match: "82%" }
-          ].map((song, i) => (
-            <div key={i} className={styles.similarItem}>
-              <div className={styles.similarLeft}>
-                <div className={styles.similarThumb}>
-                  <div className={styles.miniWave}></div>
+          {similarTracks.length > 0 ? (
+            similarTracks.map((song, i) => (
+              <div key={song.id + i} className={styles.similarItem}>
+                <div className={styles.similarLeft}>
+                  <div className={styles.similarThumb} style={{ backgroundImage: `url(${song.coverUrl})`, backgroundSize: 'cover' }}>
+                    {!song.coverUrl && <div className={styles.miniWave}></div>}
+                  </div>
+                  <div className={styles.similarInfo}>
+                    <h4>{song.name}</h4>
+                    <p>{song.artist}</p>
+                  </div>
                 </div>
-                <div className={styles.similarInfo}>
-                  <h4>{song.title}</h4>
-                  <p>{song.artist}</p>
+                <div className={styles.similarMatch}>
+                  {90 - i * 3}% Match 
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                 </div>
               </div>
-              <div className={styles.similarMatch}>
-                {song.match} Match 
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-              </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <div style={{ color: 'var(--color-on-surface-variant)', fontSize: '14px' }}>Loading similar tracks...</div>
+          )}
         </div>
       </section>
     </div>
