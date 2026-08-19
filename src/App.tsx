@@ -14,43 +14,47 @@ import { AuthLayout } from './layouts/AuthLayout';
 import { LoginPage } from './pages/Auth/LoginPage';
 import { RegisterPage } from './pages/Auth/RegisterPage';
 import { ResetPasswordPage } from './pages/Auth/ResetPasswordPage';
+import { AuthProvider } from './contexts/AuthContext';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import './styles/App.css';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Public Landing Page */}
-        <Route path="/" element={<LandingPage />} />
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Public Landing Page */}
+          <Route path="/" element={<LandingPage />} />
 
-        {/* Auth Routes */}
-        <Route element={<AuthLayout />}>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/reset-password" element={<ResetPasswordPage />} />
-        </Route>
+          {/* Auth Routes */}
+          <Route element={<AuthLayout />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
+          </Route>
 
-        {/* Protected / App Routes with Sidebar Layout */}
-        <Route element={<DashboardLayout />}>
-          <Route path="/dashboard" element={<HomePage />} />
-          <Route path="/explore" element={<ExplorePage />} />
-          <Route path="/analyze" element={<AnalysisPage />} />
-          <Route path="/processing" element={<ProcessingPage />} />
-          <Route path="/analyze/result" element={<AnalysisResultPage />} />
-          <Route path="/personality/report" element={<PersonalityPage />} />
-          <Route path="/personality/setup" element={<PersonalitySetupPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          
-          {/* Placeholder for other nav items */}
-          <Route path="/universe" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/personality" element={<Navigate to="/profile" replace />} />
-        </Route>
+          {/* Protected / App Routes with Sidebar Layout */}
+          <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+            <Route path="/dashboard" element={<HomePage />} />
+            <Route path="/explore" element={<ExplorePage />} />
+            <Route path="/analyze" element={<AnalysisPage />} />
+            <Route path="/processing" element={<ProcessingPage />} />
+            <Route path="/analyze/result" element={<AnalysisResultPage />} />
+            <Route path="/personality/report" element={<PersonalityPage />} />
+            <Route path="/personality/setup" element={<PersonalitySetupPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            
+            {/* Placeholder for other nav items */}
+            <Route path="/universe" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/personality" element={<Navigate to="/profile" replace />} />
+          </Route>
 
-        {/* Fallback route */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
+          {/* Fallback route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

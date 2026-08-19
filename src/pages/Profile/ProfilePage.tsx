@@ -1,20 +1,26 @@
+import { useAuth } from '../../contexts/AuthContext';
 import styles from './ProfilePage.module.css';
 
 export const ProfilePage = () => {
+  const { user } = useAuth();
+  const displayName = user?.displayName || 'User';
+  const displayEmail = user?.email || 'user@example.com';
+  const initial = displayName.charAt(0).toUpperCase();
+
   return (
     <div className={styles.container}>
       <div className={styles.topLayout}>
         <div className={styles.profileCard}>
           <div className={styles.profileHeader}>
             <div className={styles.avatarWrap}>
-              <div className={styles.avatar}></div>
+              <div className={styles.avatar}>{initial}</div>
             </div>
             <div className={styles.userInfo}>
               <h1 className={styles.name}>
-                Arda 
+                {displayName}
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
               </h1>
-              <p className={styles.email}>arda.beats@sonora.ai</p>
+              <p className={styles.email}>{displayEmail}</p>
               
               <div className={styles.badges}>
                 <span className={styles.badge}><span className={styles.dotSecondary}></span> Pro Member</span>
