@@ -1,6 +1,5 @@
 import { collection, doc, addDoc, getDocs, getDoc, query, where, orderBy, limit, Timestamp } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
-import { updateUserProfile } from './userService';
 
 export interface AnalysisRecord {
   id?: string;

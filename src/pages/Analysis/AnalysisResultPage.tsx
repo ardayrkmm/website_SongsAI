@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { getAnalysisResult, AnalysisRecord } from '../../services/db/analysisService';
+import { getAnalysisResult } from '../../services/db/analysisService';
+import type { AnalysisRecord } from '../../services/db/analysisService';
 import styles from './AnalysisResultPage.module.css';
 
 export const AnalysisResultPage = () => {

@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { getUserAnalysisHistory, AnalysisRecord } from '../../services/db/analysisService';
-import { getUserProfile, UserProfile } from '../../services/db/userService';
+import { getUserAnalysisHistory } from '../../services/db/analysisService';
+import type { AnalysisRecord } from '../../services/db/analysisService';
+import { getUserProfile } from '../../services/db/userService';
+import type { UserProfile } from '../../services/db/userService';
 import styles from './ProfilePage.module.css';
 
 export const ProfilePage = () => {
