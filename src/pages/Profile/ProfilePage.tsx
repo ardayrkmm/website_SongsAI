@@ -1,11 +1,35 @@
+import { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { getUserAnalysisHistory, AnalysisRecord } from '../../services/db/analysisService';
+import { getUserProfile, UserProfile } from '../../services/db/userService';
 import styles from './ProfilePage.module.css';
 
 export const ProfilePage = () => {
   const { user } = useAuth();
-  const displayName = user?.displayName || 'User';
-  const displayEmail = user?.email || 'user@example.com';
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [history, setHistory] = useState<AnalysisRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (user) {
+        const [userProf, analyses] = await Promise.all([
+          getUserProfile(user.uid),
+          getUserAnalysisHistory(user.uid, 5)
+        ]);
+        setProfile(userProf);
+        setHistory(analyses);
+      }
+      setLoading(false);
+    };
+    fetchData();
+  }, [user]);
+
+  const displayName = profile?.displayName || user?.displayName || 'User';
+  const displayEmail = profile?.email || user?.email || 'user@example.com';
   const initial = displayName.charAt(0).toUpperCase();
+
+  if (loading) return <div className={styles.container}>Loading profile...</div>;
 
   return (
     <div className={styles.container}>
@@ -93,38 +117,22 @@ export const ProfilePage = () => {
         </div>
         
         <div className={styles.activityList}>
-          <div className={styles.activityItem}>
-            <div className={styles.activityIcon} style={{backgroundColor: 'rgba(76,215,246,0.1)', color: 'var(--color-secondary)'}}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-            </div>
-            <div className={styles.activityInfo}>
-              <h4>Analyzed "Midnight Cityscape"</h4>
-              <p>Synthwave • 120 BPM</p>
-            </div>
-            <div className={styles.activityTime}>2 hours ago</div>
-          </div>
-          
-          <div className={styles.activityItem}>
-            <div className={styles.activityIcon} style={{backgroundColor: 'rgba(46,204,113,0.1)', color: 'var(--color-tertiary)'}}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-            </div>
-            <div className={styles.activityInfo}>
-              <h4>Saved Playlist "Deep Focus Focus"</h4>
-              <p>Ambient • 45 Tracks</p>
-            </div>
-            <div className={styles.activityTime}>Yesterday</div>
-          </div>
-          
-          <div className={styles.activityItem}>
-            <div className={styles.activityIcon} style={{backgroundColor: 'rgba(192,193,255,0.1)', color: 'var(--color-primary)'}}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-            </div>
-            <div className={styles.activityInfo}>
-              <h4>Unlocked "Night Explorer" Persona</h4>
-              <p>Achievement</p>
-            </div>
-            <div className={styles.activityTime}>3 days ago</div>
-          </div>
+          {history.length > 0 ? (
+            history.map((record) => (
+              <div key={record.id} className={styles.activityItem}>
+                <div className={styles.activityIcon} style={{backgroundColor: 'rgba(76,215,246,0.1)', color: 'var(--color-secondary)'}}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                </div>
+                <div className={styles.activityInfo}>
+                  <h4>Analyzed "{record.trackTitle}"</h4>
+                  <p>{record.artistName} • {record.confidence}% Match</p>
+                </div>
+                <div className={styles.activityTime}>Just now</div>
+              </div>
+            ))
+          ) : (
+            <p style={{color: 'var(--color-on-surface-variant)', fontSize: '13px'}}>No recent activity.</p>
+          )}
         </div>
       </div>
     </div>

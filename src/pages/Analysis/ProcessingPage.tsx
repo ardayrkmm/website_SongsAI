@@ -1,17 +1,55 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import { saveAnalysisResult } from '../../services/db/analysisService';
 import styles from './ProcessingPage.module.css';
 
 export const ProcessingPage = () => {
   const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isSaving = useRef(false);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const interval = setInterval(async () => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
-          setTimeout(() => navigate('/analyze/result'), 500);
+          
+          if (!isSaving.current && user) {
+            isSaving.current = true;
+            // Generate dummy analysis data and save to DB
+            const dummyData = {
+              trackId: 'blinding-lights',
+              trackTitle: 'Blinding Lights',
+              artistName: 'The Weeknd',
+              vibe: 'ENERGETIC',
+              confidence: 94,
+              metrics: {
+                energy: 90,
+                danceability: 85,
+                valence: 65,
+                tempo: 100,
+                acousticness: 25,
+                instrumentalness: 10
+              },
+              insights: {
+                rhythm: 'High-energy rhythmic profile',
+                movement: 'Strong danceability',
+                mood: 'Uplifting Melancholy'
+              }
+            };
+            
+            saveAnalysisResult(user.uid, dummyData).then((id) => {
+              navigate(`/analyze/result?id=${id}`);
+            }).catch(() => {
+              // fallback
+              navigate('/analyze/result');
+            });
+          } else if (!user) {
+            navigate('/analyze/result');
+          }
+          
           return 100;
         }
         // Random increment between 1 and 15
@@ -21,7 +59,7 @@ export const ProcessingPage = () => {
     }, 300);
 
     return () => clearInterval(interval);
-  }, [navigate]);
+  }, [navigate, user]);
 
   return (
     <div className={styles.container}>

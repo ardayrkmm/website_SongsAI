@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 import { auth } from '../lib/firebase';
+import { createUserProfile } from '../services/db/userService';
 
 interface AuthContextType {
   user: User | null;
@@ -22,8 +23,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
+      if (currentUser) {
+        // Create user profile in Firestore if it doesn't exist
+        try {
+          await createUserProfile(currentUser);
+        } catch (error) {
+          console.error("Failed to initialize user profile", error);
+        }
+      }
       setLoading(false);
     });
 

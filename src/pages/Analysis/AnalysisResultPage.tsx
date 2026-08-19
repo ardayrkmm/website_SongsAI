@@ -1,7 +1,47 @@
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { getAnalysisResult, AnalysisRecord } from '../../services/db/analysisService';
 import styles from './AnalysisResultPage.module.css';
 
 export const AnalysisResultPage = () => {
+  const [data, setData] = useState<AnalysisRecord | null>(null);
+  const [loading, setLoading] = useState(true);
+  const location = useLocation();
+
+  useEffect(() => {
+    const fetchAnalysis = async () => {
+      const params = new URLSearchParams(location.search);
+      const id = params.get('id');
+      
+      if (id) {
+        const result = await getAnalysisResult(id);
+        if (result) {
+          setData(result);
+        }
+      }
+      setLoading(false);
+    };
+
+    fetchAnalysis();
+  }, [location]);
+
+  if (loading) {
+    return <div className={styles.container}>Loading analysis...</div>;
+  }
+
+  // Fallback to dummy data if not found in DB (for presentation)
+  const displayData = data || {
+    trackTitle: 'Blinding Lights',
+    artistName: 'The Weeknd',
+    vibe: 'ENERGETIC',
+    confidence: 94,
+    insights: {
+      rhythm: 'Synthesizer-driven beat structure driving a consistent high tempo suitable for active listening.',
+      movement: 'Prominent 4/4 kick pattern with clear syncopation makes this highly conducive to physical movement.',
+      mood: 'High valence combined with minor key progressions creates a complex, bittersweet emotional response.'
+    }
+  };
+
   return (
     <div className={styles.container}>
       <Link to="/analyze" className={styles.backLink}>
@@ -12,7 +52,7 @@ export const AnalysisResultPage = () => {
       <div className={styles.header}>
         <div className={styles.subtitle}>AI Music Analysis</div>
         <h1 className={styles.title}>
-          <span className={styles.highlight}>Blinding Lights</span> • The Weeknd
+          <span className={styles.highlight}>{displayData.trackTitle}</span> • {displayData.artistName}
         </h1>
       </div>
 
@@ -24,9 +64,9 @@ export const AnalysisResultPage = () => {
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
             </div>
           </div>
-          <h2 className={styles.vibeTitle}>ENERGETIC</h2>
+          <h2 className={styles.vibeTitle}>{displayData.vibe}</h2>
           <div className={styles.confidenceBadge}>
-            <span className={styles.dot}></span> 94% Confidence
+            <span className={styles.dot}></span> {displayData.confidence}% Confidence
           </div>
         </div>
 
@@ -79,7 +119,7 @@ export const AnalysisResultPage = () => {
               RHYTHM
             </div>
             <h3>High-energy rhythmic profile</h3>
-            <p>Synthesizer-driven beat structure driving a consistent high tempo suitable for active listening.</p>
+            <p>{displayData.insights.rhythm}</p>
           </div>
           
           <div className={styles.insightCard}>
@@ -88,7 +128,7 @@ export const AnalysisResultPage = () => {
               MOVEMENT
             </div>
             <h3>Strong danceability</h3>
-            <p>Prominent 4/4 kick pattern with clear syncopation makes this highly conducive to physical movement.</p>
+            <p>{displayData.insights.movement}</p>
           </div>
           
           <div className={styles.insightCard}>
@@ -96,8 +136,8 @@ export const AnalysisResultPage = () => {
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
               MOOD
             </div>
-            <h3>Uplifting Melancholy</h3>
-            <p>High valence combined with minor key progressions creates a complex, bittersweet emotional response.</p>
+            <h3>Emotional Complex</h3>
+            <p>{displayData.insights.mood}</p>
           </div>
         </div>
       </section>
