@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import styles from './AnalysisPage.module.css';
 
 export const AnalysisPage = () => {
@@ -27,10 +28,10 @@ export const AnalysisPage = () => {
           <h2 className={styles.artistName}>The Weeknd</h2>
 
           <div className={styles.actionRow}>
-            <button className={styles.primaryBtn}>
+            <Link to="/processing" className={styles.primaryBtn} style={{textDecoration: 'none'}}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 20v-6M6 20V10M18 20V4"/></svg>
               Analyze with AI
-            </button>
+            </Link>
             <button className={styles.iconBtn}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
             </button>

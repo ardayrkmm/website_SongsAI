@@ -1,0 +1,283 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2xl);
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  max-width: 800px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--color-outline-variant);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--color-on-surface-variant);
+  width: fit-content;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-secondary);
+  border-radius: 50%;
+}
+
+.title {
+  font-size: 48px;
+  font-weight: 800;
+  margin: 0;
+  color: var(--color-on-surface);
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: var(--color-on-surface-variant);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.grid {
+  display: flex;
+  gap: var(--spacing-lg);
+}
+
+.signatureCard {
+  flex: 1;
+  background-color: var(--color-surface-container);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-2xl);
+}
+
+.cardHeader h3 {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.infoIcon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid var(--color-secondary);
+  color: var(--color-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-family: serif;
+}
+
+.radarWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.radarChart {
+  width: 100%;
+  height: 100%;
+}
+
+.radarGrid {
+  fill: none;
+  stroke: var(--color-outline-variant);
+  stroke-width: 1;
+}
+
+.radarAxis {
+  stroke: var(--color-outline-variant);
+  stroke-width: 1;
+}
+
+.radarData {
+  fill: rgba(192, 193, 255, 0.15);
+  stroke: var(--color-primary);
+  stroke-width: 3;
+}
+
+.radarPoint {
+  fill: var(--color-secondary);
+}
+
+.radarLabel {
+  position: absolute;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--color-on-surface);
+  white-space: nowrap;
+}
+
+.rightColumn {
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.summaryCard {
+  background-color: var(--color-surface-container);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+}
+
+.summaryHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--spacing-md);
+}
+
+.summaryCard p {
+  font-size: 14px;
+  color: var(--color-on-surface-variant);
+  line-height: 1.6;
+  margin: 0 0 var(--spacing-xl);
+}
+
+.summaryFooter {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.primaryBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--color-primary-fixed);
+  color: var(--color-on-primary-fixed);
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.primaryBtn:hover {
+  opacity: 0.9;
+}
+
+.bottomRow {
+  display: flex;
+  gap: var(--spacing-lg);
+}
+
+.metricsCard, .genresCard {
+  flex: 1;
+  background-color: var(--color-surface-container);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+}
+
+.metricsCard h3, .genresCard h3 {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0 0 var(--spacing-lg);
+}
+
+.metricList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.metricItem {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metricTop {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-on-surface-variant);
+}
+
+.metricVal {
+  color: var(--color-secondary);
+}
+
+.barWrap {
+  height: 4px;
+  background-color: var(--color-surface-container-lowest);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: 2px;
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--color-surface-container-high);
+  border: 1px solid var(--color-outline-variant);
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  color: var(--color-on-surface-variant);
+}
+
+.dotSecondary {
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-secondary);
+  border-radius: 50%;
+}
+
+@media (max-width: 1024px) {
+  .title {
+    font-size: 36px;
+  }
+  .grid {
+    flex-direction: column;
+  }
+  .bottomRow {
+    flex-direction: column;
+  }
+}

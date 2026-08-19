@@ -1,0 +1,316 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2xl);
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-on-surface-variant);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  width: fit-content;
+}
+
+.backLink:hover {
+  color: var(--color-on-surface);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.subtitle {
+  color: var(--color-on-surface-variant);
+  font-size: 14px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 500;
+  margin: 0;
+  color: var(--color-on-surface-variant);
+}
+
+.highlight {
+  color: var(--color-secondary);
+}
+
+.topSection {
+  display: flex;
+  gap: var(--spacing-xl);
+}
+
+.vibeCard {
+  flex: 1;
+  background-color: var(--color-surface-container);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  box-shadow: var(--shadow-level-1);
+}
+
+.cardLabel {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--color-on-surface-variant);
+}
+
+.vibeIconWrapper {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 2px solid rgba(192, 193, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vibeIconInner {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 2px solid var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-on-surface);
+}
+
+.vibeTitle {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--color-primary-fixed);
+  letter-spacing: 1px;
+}
+
+.confidenceBadge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: rgba(39, 63, 50, 0.5);
+  color: var(--color-tertiary);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid rgba(46, 204, 113, 0.2);
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-tertiary);
+  border-radius: 50%;
+}
+
+.dnaCard {
+  flex: 2;
+  background-color: var(--color-surface-container);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-xl);
+}
+
+.cardHeader h3 {
+  font-size: 20px;
+  margin: 0 0 4px;
+}
+
+.cardHeader p {
+  font-size: 13px;
+  color: var(--color-on-surface-variant);
+  margin: 0;
+}
+
+.infoIcon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid var(--color-secondary);
+  color: var(--color-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-family: serif;
+}
+
+.radarWrapper {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  margin: 0 auto;
+}
+
+.radarChart {
+  width: 100%;
+  height: 100%;
+}
+
+.radarGrid {
+  fill: none;
+  stroke: var(--color-outline-variant);
+  stroke-width: 1;
+}
+
+.radarAxis {
+  stroke: var(--color-outline-variant);
+  stroke-width: 1;
+}
+
+.radarData {
+  fill: rgba(192, 193, 255, 0.15);
+  stroke: var(--color-primary);
+  stroke-width: 3;
+}
+
+.radarPoint {
+  fill: var(--color-secondary);
+}
+
+.radarLabel {
+  position: absolute;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--color-on-surface-variant);
+  white-space: nowrap;
+}
+
+.insightsSection h2,
+.similarSection h2 {
+  font-size: 20px;
+  margin: 0 0 var(--spacing-lg);
+}
+
+.insightsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+}
+
+.insightCard {
+  background-color: var(--color-surface-container);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+}
+
+.insightHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-secondary);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  margin-bottom: var(--spacing-md);
+}
+
+.insightCard h3 {
+  font-size: 16px;
+  margin: 0 0 8px;
+}
+
+.insightCard p {
+  font-size: 13px;
+  color: var(--color-on-surface-variant);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.similarList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.similarItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--color-surface-container);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-sm);
+}
+
+.similarLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.similarThumb {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--color-surface-container-high), var(--color-surface-container-lowest));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.miniWave {
+  width: 24px;
+  height: 12px;
+  background-image: repeating-linear-gradient(90deg, var(--color-secondary), var(--color-secondary) 2px, transparent 2px, transparent 4px);
+}
+
+.similarInfo h4 {
+  font-size: 15px;
+  margin: 0 0 4px;
+}
+
+.similarInfo p {
+  font-size: 12px;
+  color: var(--color-on-surface-variant);
+  margin: 0;
+}
+
+.similarMatch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: rgba(12, 14, 18, 0.5);
+  border: 1px solid var(--color-outline-variant);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  color: var(--color-secondary);
+}
+
+@media (max-width: 1024px) {
+  .topSection {
+    flex-direction: column;
+  }
+  .insightsGrid {
+    grid-template-columns: 1fr;
+  }
+}

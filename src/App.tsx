@@ -4,6 +4,9 @@ import { DashboardLayout } from './layouts/DashboardLayout';
 import { HomePage } from './pages/Home/HomePage';
 import { ExplorePage } from './pages/Explore/ExplorePage';
 import { AnalysisPage } from './pages/Analysis/AnalysisPage';
+import { ProcessingPage } from './pages/Analysis/ProcessingPage';
+import { AnalysisResultPage } from './pages/Analysis/AnalysisResultPage';
+import { PersonalityPage } from './pages/Personality/PersonalityPage';
 import './styles/App.css';
 
 function App() {
@@ -18,10 +21,12 @@ function App() {
           <Route path="/dashboard" element={<HomePage />} />
           <Route path="/explore" element={<ExplorePage />} />
           <Route path="/analyze" element={<AnalysisPage />} />
+          <Route path="/processing" element={<ProcessingPage />} />
+          <Route path="/analyze/result" element={<AnalysisResultPage />} />
+          <Route path="/personality" element={<PersonalityPage />} />
           
-          {/* Placeholders for other nav items */}
+          {/* Placeholder for other nav items */}
           <Route path="/universe" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/personality" element={<Navigate to="/dashboard" replace />} />
         </Route>
 
         {/* Fallback route */}
