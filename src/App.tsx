@@ -10,6 +10,10 @@ import { PersonalityPage } from './pages/Personality/PersonalityPage';
 import { PersonalitySetupPage } from './pages/Personality/PersonalitySetupPage';
 import { ProfilePage } from './pages/Profile/ProfilePage';
 import { SettingsPage } from './pages/Settings/SettingsPage';
+import { AuthLayout } from './layouts/AuthLayout';
+import { LoginPage } from './pages/Auth/LoginPage';
+import { RegisterPage } from './pages/Auth/RegisterPage';
+import { ResetPasswordPage } from './pages/Auth/ResetPasswordPage';
 import './styles/App.css';
 
 function App() {
@@ -18,6 +22,13 @@ function App() {
       <Routes>
         {/* Public Landing Page */}
         <Route path="/" element={<LandingPage />} />
+
+        {/* Auth Routes */}
+        <Route element={<AuthLayout />}>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+        </Route>
 
         {/* Protected / App Routes with Sidebar Layout */}
         <Route element={<DashboardLayout />}>
