@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { saveAnalysisResult } from '../../services/db/analysisService';
 import styles from './ProcessingPage.module.css';
@@ -7,6 +7,7 @@ import styles from './ProcessingPage.module.css';
 export const ProcessingPage = () => {
   const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const isSaving = useRef(false);
 
@@ -18,11 +19,15 @@ export const ProcessingPage = () => {
           
           if (!isSaving.current && user) {
             isSaving.current = true;
+            
+            const track = location.state?.track;
+            
             // Generate dummy analysis data and save to DB
             const dummyData = {
-              trackId: 'blinding-lights',
-              trackTitle: 'Blinding Lights',
-              artistName: 'The Weeknd',
+              trackId: track?.id || 'blinding-lights',
+              trackTitle: track?.name || 'Blinding Lights',
+              artistName: track?.artist || 'The Weeknd',
+              coverUrl: track?.coverUrl || '',
               vibe: 'ENERGETIC',
               confidence: 94,
               metrics: {

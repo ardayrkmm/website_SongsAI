@@ -1,7 +1,49 @@
-import styles from './ExplorePage.module.css';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { SearchIcon } from '../../components/ui/Icons';
+import { searchTracks, getTrendingTracks } from '../../services/api/spotifyService';
+import type { SpotifyTrack } from '../../services/api/spotifyService';
+import styles from './ExplorePage.module.css';
 
 export const ExplorePage = () => {
+  const [query, setQuery] = useState('');
+  const [tracks, setTracks] = useState<SpotifyTrack[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchTrending = async () => {
+      setLoading(true);
+      const trending = await getTrendingTracks();
+      setTracks(trending);
+      setLoading(false);
+    };
+    fetchTrending();
+  }, []);
+
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!query.trim()) {
+      setIsSearching(false);
+      setLoading(true);
+      const trending = await getTrendingTracks();
+      setTracks(trending);
+      setLoading(false);
+      return;
+    }
+
+    setIsSearching(true);
+    setLoading(true);
+    const results = await searchTracks(query);
+    setTracks(results);
+    setLoading(false);
+  };
+
+  const handleAnalyze = (track: SpotifyTrack) => {
+    navigate('/processing', { state: { track } });
+  };
+
   return (
     <div className={styles.exploreContainer}>
       <header className={styles.header}>
@@ -10,13 +52,20 @@ export const ExplorePage = () => {
       </header>
 
       <div className={styles.searchSection}>
-        <div className={styles.searchBar}>
+        <form onSubmit={handleSearch} className={styles.searchBar}>
           <SearchIcon />
-          <input type="text" placeholder="Search songs, artists, or albums..." className={styles.searchInput} />
+          <input 
+            type="text" 
+            placeholder="Search songs, artists, or albums..." 
+            className={styles.searchInput} 
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <button type="submit" style={{ display: 'none' }}>Search</button>
           <div className={styles.shortcut}>
-            <kbd>⌘</kbd> <kbd>K</kbd>
+            <kbd>Enter</kbd>
           </div>
-        </div>
+        </form>
         
         <div className={styles.filters}>
           <div className={styles.filterIcon}>
@@ -33,43 +82,45 @@ export const ExplorePage = () => {
       <section className={styles.trendingSection}>
         <div className={styles.sectionHeader}>
           <h2>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-            Trending Analysis
+            {isSearching ? (
+              <><SearchIcon /> Search Results</>
+            ) : (
+              <><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg> Trending Analysis</>
+            )}
           </h2>
         </div>
         
-        <div className={styles.trendingGrid}>
-          {[
-            { title: "Synaptic Resonance", artist: "Neural Network feat. Data", match: "98%", tags: [{name:"EUPHORIC", color: "var(--color-secondary)"}, {name:"HIGH ENERGY", color: "var(--color-primary)"}] },
-            { title: "Abyssal Drift", artist: "Silent Construct", match: "92%", tags: [{name:"MELANCHOLIC", color: "var(--color-outline)"}, {name:"LOW ENERGY", color: "var(--color-outline-variant)"}] },
-            { title: "Unknown", artist: "Unknown", match: "0%", placeholder: true }
-          ].map((item, i) => (
-            <div key={i} className={item.placeholder ? `${styles.trendCard} ${styles.placeholderCard}` : styles.trendCard}>
-              {!item.placeholder && (
-                <>
-                  <div className={styles.cardInfo}>
-                    <div className={styles.cardTop}>
+        {loading ? (
+          <div style={{ color: 'var(--color-on-surface-variant)', padding: '20px 0' }}>Loading tracks...</div>
+        ) : (
+          <div className={styles.trendingGrid}>
+            {tracks.length > 0 ? tracks.map((track) => (
+              <div key={track.id} className={styles.trendCard}>
+                <div className={styles.cardInfo}>
+                  <div className={styles.cardTop}>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                      {track.coverUrl ? (
+                        <img src={track.coverUrl} alt={track.album} style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover' }} />
+                      ) : (
+                        <div style={{ width: 48, height: 48, borderRadius: 8, backgroundColor: 'var(--color-surface-container-high)' }} />
+                      )}
                       <div>
-                        <h3>{item.title}</h3>
-                        <p>{item.artist}</p>
+                        <h3>{track.name}</h3>
+                        <p>{track.artist}</p>
                       </div>
-                      <div className={styles.matchBadge}>{item.match} MATCH</div>
-                    </div>
-                    <div className={styles.tags}>
-                      {item.tags?.map((tag, j) => (
-                        <span key={j} className={styles.tag} style={{ backgroundColor: tag.color }}>{tag.name}</span>
-                      ))}
                     </div>
                   </div>
-                  <button className={styles.analyzeBtn}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 20v-6M6 20V10M18 20V4"/></svg>
-                    Analyze Track
-                  </button>
-                </>
-              )}
-            </div>
-          ))}
-        </div>
+                </div>
+                <button className={styles.analyzeBtn} onClick={() => handleAnalyze(track)}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 20v-6M6 20V10M18 20V4"/></svg>
+                  Analyze Track
+                </button>
+              </div>
+            )) : (
+              <div style={{ color: 'var(--color-on-surface-variant)' }}>No tracks found.</div>
+            )}
+          </div>
+        )}
       </section>
     </div>
   );
