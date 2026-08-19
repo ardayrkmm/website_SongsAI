@@ -41,7 +41,12 @@ export const HomePage = () => {
         <div className={styles.status}>
           <span className={styles.statusDot}></span> SYSTEM ONLINE
         </div>
-        <div className={styles.search}>
+        <div 
+          className={styles.search} 
+          onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }))}
+          style={{ cursor: 'pointer' }}
+          title="Search (Ctrl+K)"
+        >
           <SearchIcon />
         </div>
       </header>
