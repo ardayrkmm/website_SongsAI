@@ -18,6 +18,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import './styles/App.css';
 
+import { MusicUniversePage } from './pages/MusicUniverse/MusicUniversePage';
+
 function App() {
   return (
     <AuthProvider>
@@ -44,9 +46,8 @@ function App() {
             <Route path="/personality/setup" element={<PersonalitySetupPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/universe" element={<MusicUniversePage />} />
             
-            {/* Placeholder for other nav items */}
-            <Route path="/universe" element={<Navigate to="/dashboard" replace />} />
             <Route path="/personality" element={<Navigate to="/profile" replace />} />
           </Route>
 
