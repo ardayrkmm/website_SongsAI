@@ -28,6 +28,7 @@ export const ProcessingPage = () => {
               trackTitle: track?.name || 'Blinding Lights',
               artistName: track?.artist || 'The Weeknd',
               coverUrl: track?.coverUrl || '',
+              previewUrl: track?.previewUrl || '',
               vibe: 'ENERGETIC',
               confidence: 94,
               metrics: {

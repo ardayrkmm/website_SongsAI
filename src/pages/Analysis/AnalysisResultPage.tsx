@@ -85,6 +85,18 @@ export const AnalysisResultPage = () => {
           <h1 className={styles.title}>
             <span className={styles.highlight}>{displayData.trackTitle}</span> • {displayData.artistName}
           </h1>
+          
+          {/* Audio Preview Player */}
+          {data?.previewUrl && (
+            <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center', gap: '12px', backgroundColor: 'var(--color-surface-container-high)', padding: '8px 16px', borderRadius: '24px', width: 'fit-content' }}>
+              <audio controls controlsList="nodownload noplaybackrate" src={data.previewUrl} style={{ height: '32px', outline: 'none' }}>
+                Your browser does not support the audio element.
+              </audio>
+              <div style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                30s Preview
+              </div>
+            </div>
+          )}
         </div>
         
         {user && data && (

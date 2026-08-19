@@ -8,6 +8,7 @@ export interface AnalysisRecord {
   trackTitle: string;
   artistName: string;
   coverUrl?: string;
+  previewUrl?: string;
   vibe: string;
   confidence: number;
   metrics: {
