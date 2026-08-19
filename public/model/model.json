@@ -10,7 +10,7 @@
         {
           "class_name": "Dense",
           "config": {
-            "units": 16,
+            "units": 32,
             "activation": "relu",
             "use_bias": true,
             "kernel_initializer": {
@@ -112,21 +112,21 @@
           "name": "dense_Dense1/kernel",
           "shape": [
             6,
-            16
+            32
           ],
           "dtype": "float32"
         },
         {
           "name": "dense_Dense1/bias",
           "shape": [
-            16
+            32
           ],
           "dtype": "float32"
         },
         {
           "name": "dense_Dense2/kernel",
           "shape": [
-            16,
+            32,
             16
           ],
           "dtype": "float32"
