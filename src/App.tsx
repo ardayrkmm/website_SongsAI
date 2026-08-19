@@ -14,6 +14,7 @@ import { AuthLayout } from './layouts/AuthLayout';
 import { LoginPage } from './pages/Auth/LoginPage';
 import { RegisterPage } from './pages/Auth/RegisterPage';
 import { ResetPasswordPage } from './pages/Auth/ResetPasswordPage';
+import { NotFoundPage } from './pages/NotFound/NotFoundPage';
 import { AuthProvider } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import './styles/App.css';
@@ -52,7 +53,7 @@ function App() {
           </Route>
 
           {/* Fallback route */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
