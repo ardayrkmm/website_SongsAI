@@ -49,15 +49,32 @@ const getAccessToken = async (): Promise<string> => {
   }
 };
 
+// Use iTunes API as a fallback when Spotify keys are missing
+const fetchFromITunes = async (query: string, limit: number): Promise<SpotifyTrack[]> => {
+  try {
+    const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=${limit}`);
+    const data = await res.json();
+    return data.results.map((item: any) => ({
+      id: item.trackId.toString(),
+      name: item.trackName,
+      artist: item.artistName,
+      album: item.collectionName,
+      coverUrl: item.artworkUrl100?.replace('100x100bb', '300x300bb') || '',
+      previewUrl: item.previewUrl,
+      durationMs: item.trackTimeMillis || 200000
+    }));
+  } catch (error) {
+    console.error('iTunes API error:', error);
+    return [];
+  }
+};
+
 export const searchTracks = async (query: string, limit = 10): Promise<SpotifyTrack[]> => {
   const token = await getAccessToken();
   
   if (!token) {
-    // Return mock data if no API keys
-    return [
-      { id: '1', name: 'Mock Result 1', artist: 'Mock Artist', album: 'Mock Album', coverUrl: '', previewUrl: null, durationMs: 200000 },
-      { id: '2', name: 'Mock Result 2', artist: 'Mock Artist', album: 'Mock Album', coverUrl: '', previewUrl: null, durationMs: 210000 }
-    ];
+    console.log("Using iTunes API fallback for search...");
+    return fetchFromITunes(query, limit);
   }
 
   try {
@@ -82,7 +99,7 @@ export const searchTracks = async (query: string, limit = 10): Promise<SpotifyTr
     return [];
   } catch (error) {
     console.error('Error searching tracks:', error);
-    return [];
+    return fetchFromITunes(query, limit); // fallback to iTunes if Spotify fails
   }
 };
 
@@ -91,10 +108,8 @@ export const getTrendingTracks = async (): Promise<SpotifyTrack[]> => {
   const token = await getAccessToken();
   
   if (!token) {
-    return [
-      { id: 'mock-1', name: 'Blinding Lights', artist: 'The Weeknd', album: 'After Hours', coverUrl: '', previewUrl: null, durationMs: 200000 },
-      { id: 'mock-2', name: 'As It Was', artist: 'Harry Styles', album: 'Harrys House', coverUrl: '', previewUrl: null, durationMs: 167000 },
-    ];
+    console.log("Using iTunes API fallback for trending...");
+    return fetchFromITunes('top hits 2024', 10);
   }
 
   try {
@@ -127,10 +142,10 @@ export const getTrendingTracks = async (): Promise<SpotifyTrack[]> => {
         });
       }
     }
-    return [];
+    return fetchFromITunes('top hits', 10);
   } catch (error) {
     console.error('Error fetching trending tracks:', error);
-    return [];
+    return fetchFromITunes('top hits', 10);
   }
 };
 
@@ -138,11 +153,7 @@ export const getRecommendationsByArtist = async (artistName: string, limit = 3):
   const token = await getAccessToken();
   
   if (!token) {
-    return [
-      { id: 'rec-1', name: 'Similar Track 1', artist: artistName, album: 'Album', coverUrl: '', previewUrl: null, durationMs: 200000 },
-      { id: 'rec-2', name: 'Similar Track 2', artist: artistName, album: 'Album', coverUrl: '', previewUrl: null, durationMs: 200000 },
-      { id: 'rec-3', name: 'Similar Track 3', artist: artistName, album: 'Album', coverUrl: '', previewUrl: null, durationMs: 200000 },
-    ];
+    return fetchFromITunes(artistName, limit);
   }
 
   try {
@@ -166,9 +177,9 @@ export const getRecommendationsByArtist = async (artistName: string, limit = 3):
         durationMs: item.duration_ms
       }));
     }
-    return [];
+    return fetchFromITunes(artistName, limit);
   } catch (error) {
     console.error('Error fetching recommendations:', error);
-    return [];
+    return fetchFromITunes(artistName, limit);
   }
 };
