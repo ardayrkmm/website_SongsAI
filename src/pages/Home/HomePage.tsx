@@ -1,7 +1,31 @@
 import styles from './HomePage.module.css';
+import { useEffect, useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { getFavoriteSongs, SavedTrack } from '../../services/db/musicService';
 import { SearchIcon } from '../../components/ui/Icons';
 
 export const HomePage = () => {
+  const { user } = useAuth();
+  const [favorites, setFavorites] = useState<SavedTrack[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (user) {
+        const favs = await getFavoriteSongs(user.uid);
+        const sortedFavs = favs.sort((a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime());
+        setFavorites(sortedFavs.slice(0, 3));
+      }
+      setLoading(false);
+    };
+    
+    fetchData();
+  }, [user]);
+
+  const greeting = user?.displayName 
+    ? `Welcome back, ${user.displayName.split(' ')[0]}` 
+    : 'Welcome to Sonora AI';
+
   return (
     <div className={styles.homeContainer}>
       <header className={styles.header}>
@@ -13,7 +37,7 @@ export const HomePage = () => {
         </div>
       </header>
 
-      <h1 className={styles.greeting}>Good evening, Arda.</h1>
+      <h1 className={styles.greeting}>{greeting}.</h1>
 
       <div className={styles.topSection}>
         <div className={styles.personalityCard}>
@@ -26,7 +50,6 @@ export const HomePage = () => {
             <button className={styles.btnOutline}>View Full Report</button>
           </div>
           <div className={styles.personalityGraphic}>
-            {/* Mock abstract visual */}
             <div className={styles.mockWaveform}></div>
           </div>
         </div>
@@ -64,27 +87,29 @@ export const HomePage = () => {
 
       <section className={styles.recentSection}>
         <div className={styles.sectionHeader}>
-          <h2>Recently Analyzed</h2>
+          <h2>Saved Favorites</h2>
           <a href="#" className={styles.viewAll}>View All</a>
         </div>
-        <div className={styles.cardsScroll}>
-          {[
-            { title: "Midnight City", artist: "M83", match: "92%" },
-            { title: "Nightcall", artist: "Kavinsky", match: "88%" },
-            { title: "Resonance", artist: "HOME", match: "75%" }
-          ].map((item, i) => (
-            <div key={i} className={styles.trackCard}>
-              <div className={styles.trackImage}>
-                <div className={styles.matchBadge}>{item.match} MATCH</div>
+        {loading ? (
+          <p style={{color: 'var(--color-on-surface-variant)'}}>Loading favorites...</p>
+        ) : (
+          <div className={styles.cardsScroll}>
+            {favorites.length > 0 ? favorites.map((item) => (
+              <div key={item.id} className={styles.trackCard}>
+                <div className={styles.trackImage} style={item.coverUrl ? { backgroundImage: `url(${item.coverUrl})` } : {}}>
+                  <div className={styles.matchBadge}>FAV</div>
+                </div>
+                <h4 className={styles.trackTitle}>{item.name}</h4>
+                <p className={styles.trackArtist}>{item.artist}</p>
+                <div className={styles.miniWaveform}>
+                  <div className={styles.mBar}></div><div className={styles.mBar}></div><div className={styles.mBar}></div><div className={styles.mBar}></div>
+                </div>
               </div>
-              <h4 className={styles.trackTitle}>{item.title}</h4>
-              <p className={styles.trackArtist}>{item.artist}</p>
-              <div className={styles.miniWaveform}>
-                <div className={styles.mBar}></div><div className={styles.mBar}></div><div className={styles.mBar}></div><div className={styles.mBar}></div>
-              </div>
-            </div>
-          ))}
-        </div>
+            )) : (
+              <p style={{color: 'var(--color-on-surface-variant)'}}>You haven't saved any tracks yet.</p>
+            )}
+          </div>
+        )}
       </section>
 
       <section className={styles.recommendedSection}>

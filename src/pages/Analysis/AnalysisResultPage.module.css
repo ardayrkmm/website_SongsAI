@@ -25,8 +25,11 @@
 
 .header {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .subtitle {

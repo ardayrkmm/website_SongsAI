@@ -2,12 +2,16 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { getAnalysisResult } from '../../services/db/analysisService';
 import type { AnalysisRecord } from '../../services/db/analysisService';
+import { toggleFavoriteSong, checkIsFavorited } from '../../services/db/musicService';
+import { useAuth } from '../../contexts/AuthContext';
 import styles from './AnalysisResultPage.module.css';
 
 export const AnalysisResultPage = () => {
   const [data, setData] = useState<AnalysisRecord | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isFavorite, setIsFavorite] = useState(false);
   const location = useLocation();
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchAnalysis = async () => {
@@ -18,13 +22,33 @@ export const AnalysisResultPage = () => {
         const result = await getAnalysisResult(id);
         if (result) {
           setData(result);
+          if (user) {
+            const fav = await checkIsFavorited(user.uid, result.trackId);
+            setIsFavorite(fav);
+          }
         }
       }
       setLoading(false);
     };
 
     fetchAnalysis();
-  }, [location]);
+  }, [location, user]);
+
+  const handleToggleFavorite = async () => {
+    if (!user || !data) return;
+    const trackData = {
+      id: data.trackId,
+      name: data.trackTitle,
+      artist: data.artistName,
+      album: 'Unknown',
+      coverUrl: data.coverUrl || '',
+      previewUrl: null,
+      durationMs: 0
+    };
+    
+    const newStatus = await toggleFavoriteSong(user.uid, trackData);
+    setIsFavorite(newStatus);
+  };
 
   if (loading) {
     return <div className={styles.container}>Loading analysis...</div>;
@@ -51,10 +75,34 @@ export const AnalysisResultPage = () => {
       </Link>
       
       <div className={styles.header}>
-        <div className={styles.subtitle}>AI Music Analysis</div>
-        <h1 className={styles.title}>
-          <span className={styles.highlight}>{displayData.trackTitle}</span> • {displayData.artistName}
-        </h1>
+        <div>
+          <div className={styles.subtitle}>AI Music Analysis</div>
+          <h1 className={styles.title}>
+            <span className={styles.highlight}>{displayData.trackTitle}</span> • {displayData.artistName}
+          </h1>
+        </div>
+        
+        {user && data && (
+          <button 
+            onClick={handleToggleFavorite}
+            style={{
+              background: 'transparent', 
+              border: '1px solid var(--color-outline-variant)',
+              borderRadius: '8px',
+              padding: '8px 16px',
+              color: isFavorite ? 'var(--color-primary)' : 'var(--color-on-surface)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill={isFavorite ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+            {isFavorite ? 'Saved to Favorites' : 'Save Song'}
+          </button>
+        )}
       </div>
 
       <div className={styles.topSection}>
