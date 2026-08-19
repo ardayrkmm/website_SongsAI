@@ -53,10 +53,21 @@ export const Sidebar = () => {
           <SettingsIcon />
           <span>Settings</span>
         </NavLink>
-        <a href="#" className={styles.navItem}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-          <span>Help</span>
-        </a>
+        <button className={styles.navItem} onClick={() => alert('Notifications System: No new alerts.')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left', width: '100%', position: 'relative' }}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <span>Notifications</span>
+          <div style={{
+            position: 'absolute',
+            right: '16px',
+            width: '8px',
+            height: '8px',
+            backgroundColor: 'var(--color-primary)',
+            borderRadius: '50%'
+          }}></div>
+        </button>
         
         <NavLink to="/profile" className={styles.userProfile} style={{textDecoration: 'none'}}>
           <div className={styles.avatarWrap}>

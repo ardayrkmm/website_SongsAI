@@ -10,6 +10,7 @@ export const ExplorePage = () => {
   const [tracks, setTracks] = useState<SpotifyTrack[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,6 +39,14 @@ export const ExplorePage = () => {
     const results = await searchTracks(query);
     setTracks(results);
     setLoading(false);
+  };
+
+  const handleFilterClick = (filter: string) => {
+    if (activeFilter === filter) {
+      setActiveFilter(null);
+    } else {
+      setActiveFilter(filter);
+    }
   };
 
   const handleAnalyze = (track: SpotifyTrack) => {
@@ -73,7 +82,14 @@ export const ExplorePage = () => {
           </div>
           <div className={styles.pills}>
             {['Genre', 'Mood', 'Energy', 'Danceability', 'Era', 'Popularity'].map(filter => (
-              <button key={filter} className={styles.pillBtn}>{filter}</button>
+              <button 
+                key={filter} 
+                className={`${styles.pillBtn} ${activeFilter === filter ? styles.pillActive : ''}`}
+                onClick={() => handleFilterClick(filter)}
+                style={activeFilter === filter ? { backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)' } : {}}
+              >
+                {filter}
+              </button>
             ))}
           </div>
         </div>
