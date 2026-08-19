@@ -140,6 +140,43 @@ export const ProfilePage = () => {
           )}
         </div>
       </div>
+
+      <div className={styles.analyticsSection} style={{ marginTop: '32px' }}>
+        <div className={styles.sectionHeader} style={{ marginBottom: '16px' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: 600 }}>Dataset Analytics & Trends</h2>
+        </div>
+        <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+          
+          {/* Music Trends by Year Chart Mock */}
+          <div style={{ flex: '1 1 400px', backgroundColor: 'var(--color-surface-container)', padding: '24px', borderRadius: '16px', border: '1px solid var(--color-outline-variant)' }}>
+            <h3 style={{ fontSize: '14px', marginBottom: '16px', color: 'var(--color-on-surface-variant)' }}>Music Era Trends (By Release Year)</h3>
+            <div style={{ display: 'flex', alignItems: 'flex-end', height: '150px', gap: '8px', borderBottom: '1px solid var(--color-outline)', paddingBottom: '8px' }}>
+              {[15, 30, 45, 20, 60, 85, 40, 95].map((h, i) => (
+                <div key={i} style={{ flex: 1, backgroundColor: 'var(--color-primary)', height: `${h}%`, borderRadius: '4px 4px 0 0', opacity: 0.6 + (h/200) }}></div>
+              ))}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px', fontSize: '11px', color: 'var(--color-on-surface-variant)' }}>
+              <span>1980s</span>
+              <span>1990s</span>
+              <span>2000s</span>
+              <span>2010s</span>
+              <span>2020s</span>
+            </div>
+          </div>
+
+          {/* Genre Distribution Pie Chart Mock */}
+          <div style={{ flex: '1 1 300px', backgroundColor: 'var(--color-surface-container)', padding: '24px', borderRadius: '16px', border: '1px solid var(--color-outline-variant)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <h3 style={{ fontSize: '14px', marginBottom: '24px', color: 'var(--color-on-surface-variant)', alignSelf: 'flex-start' }}>Genre Distribution</h3>
+            <div style={{ width: '120px', height: '120px', borderRadius: '50%', background: 'conic-gradient(var(--color-primary) 0% 45%, var(--color-secondary) 45% 75%, var(--color-tertiary) 75% 90%, var(--color-surface-container-high) 90% 100%)', marginBottom: '24px' }}></div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center', fontSize: '12px' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><span style={{width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--color-primary)'}}></span> Electronic</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><span style={{width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--color-secondary)'}}></span> Pop</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><span style={{width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--color-tertiary)'}}></span> Rock</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
     </div>
   );
 };
