@@ -3,19 +3,26 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { getFavoriteSongs } from '../../services/db/musicService';
 import type { SavedTrack } from '../../services/db/musicService';
+import { getUserStatistics } from '../../services/db/analysisService';
+import type { UserMusicStats } from '../../services/db/analysisService';
 import { SearchIcon } from '../../components/ui/Icons';
 
 export const HomePage = () => {
   const { user } = useAuth();
   const [favorites, setFavorites] = useState<SavedTrack[]>([]);
+  const [stats, setStats] = useState<UserMusicStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       if (user) {
-        const favs = await getFavoriteSongs(user.uid);
+        const [favs, userStats] = await Promise.all([
+          getFavoriteSongs(user.uid),
+          getUserStatistics(user.uid)
+        ]);
         const sortedFavs = favs.sort((a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime());
         setFavorites(sortedFavs.slice(0, 3));
+        setStats(userStats);
       }
       setLoading(false);
     };
@@ -46,8 +53,8 @@ export const HomePage = () => {
             <div className={styles.tag}>
               <span className={styles.dotSecondary}></span> YOUR MUSIC PERSONALITY
             </div>
-            <h2>The Night Explorer</h2>
-            <p>Your recent acoustic patterns suggest a preference for deep, atmospheric soundscapes with complex rhythmic structures. You lean heavily into ambient electronica post-midnight.</p>
+            <h2>{stats?.personaName || 'The Night Explorer'}</h2>
+            <p>{stats?.personaDesc || 'Your recent acoustic patterns suggest a preference for deep, atmospheric soundscapes.'}</p>
             <button className={styles.btnOutline}>View Full Report</button>
           </div>
           <div className={styles.personalityGraphic}>
@@ -63,20 +70,20 @@ export const HomePage = () => {
           <div className={styles.metricsGrid}>
             <div className={styles.metricItem}>
               <span className={styles.metricLabel}>ANALYZED</span>
-              <span className={styles.metricValue}>1,204 tracks</span>
+              <span className={styles.metricValue}>{stats?.totalAnalyzed || 0} tracks</span>
             </div>
             <div className={styles.metricItem}>
               <span className={styles.metricLabel}>TOP MOOD</span>
-              <span className={styles.metricValue} style={{color: 'var(--color-secondary)'}}>Atmospheric</span>
+              <span className={styles.metricValue} style={{color: 'var(--color-secondary)'}}>{stats?.topMood || 'Unknown'}</span>
             </div>
           </div>
           <div className={styles.energyMeter}>
             <div className={styles.meterHeader}>
               <span className={styles.metricLabel}>AVG ENERGY</span>
-              <span className={styles.metricValue}>68%</span>
+              <span className={styles.metricValue}>{stats?.avgEnergy || 0}%</span>
             </div>
             <div className={styles.progressBar}>
-              <div className={styles.progressFill} style={{ width: '68%' }}></div>
+              <div className={styles.progressFill} style={{ width: `${stats?.avgEnergy || 0}%` }}></div>
             </div>
             <div className={styles.meterLabels}>
               <span>Chill</span>

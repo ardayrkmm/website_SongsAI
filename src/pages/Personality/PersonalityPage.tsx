@@ -1,15 +1,36 @@
+import { useEffect, useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { getUserStatistics } from '../../services/db/analysisService';
+import type { UserMusicStats } from '../../services/db/analysisService';
 import styles from './PersonalityPage.module.css';
 
 export const PersonalityPage = () => {
+  const { user } = useAuth();
+  const [stats, setStats] = useState<UserMusicStats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (user) {
+        const userStats = await getUserStatistics(user.uid);
+        setStats(userStats);
+      }
+      setLoading(false);
+    };
+    fetchStats();
+  }, [user]);
+
+  if (loading) return <div className={styles.container}>Loading persona...</div>;
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.badge}>
           <span className={styles.dot}></span> ANALYSIS COMPLETE
         </div>
-        <h1 className={styles.title}>THE NIGHT EXPLORER</h1>
+        <h1 className={styles.title}>{stats?.personaName.toUpperCase() || 'THE NIGHT EXPLORER'}</h1>
         <p className={styles.subtitle}>
-          You are drawn to energetic, atmospheric, and emotionally intense music. Your acoustic fingerprint reveals a seeker of deep rhythms and expansive soundscapes.
+          Based on your analysis of {stats?.totalAnalyzed || 0} tracks.
         </p>
       </div>
 
@@ -40,9 +61,9 @@ export const PersonalityPage = () => {
               <circle cx="40" cy="70" r="3" className={styles.radarPoint} />
             </svg>
             <span className={styles.radarLabel} style={{top: '0', left: '50%', transform: 'translate(-50%, -10px)'}}>ENERGY (90%)</span>
-            <span className={styles.radarLabel} style={{top: '50%', right: '0', transform: 'translate(10px, -50%)'}}>DA</span>
+            <span className={styles.radarLabel} style={{top: '50%', right: '0', transform: 'translate(10px, -50%)'}}>DANCEABILITY</span>
             <span className={styles.radarLabel} style={{bottom: '0', left: '50%', transform: 'translate(-50%, 10px)'}}>VALENCE (65%)</span>
-            <span className={styles.radarLabel} style={{top: '50%', left: '0', transform: 'translate(-10px, -50%)'}}>%)</span>
+            <span className={styles.radarLabel} style={{top: '50%', left: '0', transform: 'translate(-10px, -50%)'}}>ACOUSTIC</span>
           </div>
         </div>
 
@@ -53,7 +74,7 @@ export const PersonalityPage = () => {
               Profile Summary
             </div>
             <p>
-              Your listening patterns indicate a strong gravitational pull towards tracks built on synthetic textures and driving sub-bass. You tend to favor minor keys that evoke a sense of nocturnal exploration. Unlike standard pop listeners, your tolerance for long, evolving instrumental passages is exceptionally high, scoring in the top 4% of our user base.
+              {stats?.personaDesc || 'Your listening patterns indicate a strong gravitational pull towards tracks built on synthetic textures.'}
             </p>
             <div className={styles.summaryFooter}>
               <button className={styles.primaryBtn}>
@@ -69,24 +90,17 @@ export const PersonalityPage = () => {
               <div className={styles.metricList}>
                 <div className={styles.metricItem}>
                   <div className={styles.metricTop}>
-                    <span>BPM Preference</span>
-                    <span className={styles.metricVal}>120-135</span>
+                    <span>Average Energy</span>
+                    <span className={styles.metricVal}>{stats?.avgEnergy || 0}%</span>
                   </div>
-                  <div className={styles.barWrap}><div className={styles.barFill} style={{width:'70%', backgroundColor:'var(--color-secondary)'}}></div></div>
+                  <div className={styles.barWrap}><div className={styles.barFill} style={{width:`${stats?.avgEnergy || 0}%`, backgroundColor:'var(--color-secondary)'}}></div></div>
                 </div>
                 <div className={styles.metricItem}>
                   <div className={styles.metricTop}>
-                    <span>Instrumentalness</span>
-                    <span className={styles.metricVal}>High</span>
+                    <span>Dominant Mood</span>
+                    <span className={styles.metricVal}>{stats?.topMood || 'Unknown'}</span>
                   </div>
                   <div className={styles.barWrap}><div className={styles.barFill} style={{width:'85%', backgroundColor:'var(--color-secondary)'}}></div></div>
-                </div>
-                <div className={styles.metricItem}>
-                  <div className={styles.metricTop}>
-                    <span>Vocal Presence</span>
-                    <span className={styles.metricVal} style={{color:'var(--color-on-surface-variant)'}}>Low</span>
-                  </div>
-                  <div className={styles.barWrap}><div className={styles.barFill} style={{width:'30%', backgroundColor:'var(--color-outline)'}}></div></div>
                 </div>
               </div>
             </div>
@@ -94,11 +108,9 @@ export const PersonalityPage = () => {
             <div className={styles.genresCard}>
               <h3>Dominant Genres</h3>
               <div className={styles.pills}>
-                <span className={styles.pill}><span className={styles.dotSecondary}></span> Dark Synthwave</span>
-                <span className={styles.pill}><span className={styles.dotSecondary}></span> Ambient Techno</span>
-                <span className={styles.pill}><span className={styles.dotSecondary}></span> Post-Rock</span>
-                <span className={styles.pill}>Industrial</span>
-                <span className={styles.pill}><span className={styles.dotSecondary}></span> Deep House</span>
+                <span className={styles.pill}><span className={styles.dotSecondary}></span> {stats?.topMood || 'Dark Synthwave'}</span>
+                <span className={styles.pill}><span className={styles.dotSecondary}></span> Ambient</span>
+                <span className={styles.pill}><span className={styles.dotSecondary}></span> Focus</span>
               </div>
             </div>
           </div>

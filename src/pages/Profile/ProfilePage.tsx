@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { getUserAnalysisHistory } from '../../services/db/analysisService';
-import type { AnalysisRecord } from '../../services/db/analysisService';
+import { getUserAnalysisHistory, getUserStatistics } from '../../services/db/analysisService';
+import type { AnalysisRecord, UserMusicStats } from '../../services/db/analysisService';
 import { getUserProfile } from '../../services/db/userService';
 import type { UserProfile } from '../../services/db/userService';
 import styles from './ProfilePage.module.css';
@@ -10,17 +10,20 @@ export const ProfilePage = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [history, setHistory] = useState<AnalysisRecord[]>([]);
+  const [stats, setStats] = useState<UserMusicStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       if (user) {
-        const [userProf, analyses] = await Promise.all([
+        const [userProf, analyses, userStats] = await Promise.all([
           getUserProfile(user.uid),
-          getUserAnalysisHistory(user.uid, 5)
+          getUserAnalysisHistory(user.uid, 5),
+          getUserStatistics(user.uid)
         ]);
         setProfile(userProf);
         setHistory(analyses);
+        setStats(userStats);
       }
       setLoading(false);
     };
@@ -49,7 +52,7 @@ export const ProfilePage = () => {
               <p className={styles.email}>{displayEmail}</p>
               
               <div className={styles.badges}>
-                <span className={styles.badge}><span className={styles.dotSecondary}></span> Pro Member</span>
+                <span className={styles.badge}><span className={styles.dotSecondary}></span> Premium Tier</span>
                 <span className={styles.badge}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
                   Audio Architect
@@ -68,8 +71,8 @@ export const ProfilePage = () => {
 
         <div className={styles.personaCard}>
           <p className={styles.personaLabel}>Music Personality</p>
-          <h2 className={styles.personaTitle}>Night Explorer</h2>
-          <p className={styles.personaDesc}>Drawn to deep, atmospheric soundscapes and complex rhythmic structures after dark.</p>
+          <h2 className={styles.personaTitle}>{stats?.personaName || 'Newcomer'}</h2>
+          <p className={styles.personaDesc}>{stats?.personaDesc || 'Analyze more tracks to unlock your music persona.'}</p>
           <div className={styles.miniChart}>
             {[30, 60, 40, 80, 50, 90, 70, 20, 40, 85, 30, 60, 45, 75, 80, 50, 90].map((h, i) => (
               <div key={i} className={styles.bar} style={{height: `${h}%`, backgroundColor: i % 4 === 0 ? 'var(--color-primary)' : 'var(--color-outline)'}}></div>
@@ -84,7 +87,7 @@ export const ProfilePage = () => {
             <span>Songs Analyzed</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
           </div>
-          <div className={styles.statValue}>1,204</div>
+          <div className={styles.statValue}>{stats?.totalAnalyzed || 0}</div>
         </div>
         
         <div className={styles.statCard}>
@@ -92,7 +95,7 @@ export const ProfilePage = () => {
             <span>Favorite Mood</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary)" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
           </div>
-          <div className={styles.statValue} style={{color: 'var(--color-secondary)'}}>Atmospheric</div>
+          <div className={styles.statValue} style={{color: 'var(--color-secondary)'}}>{stats?.topMood || 'Unknown'}</div>
         </div>
         
         <div className={styles.statCard}>
@@ -100,8 +103,8 @@ export const ProfilePage = () => {
             <span>Average Energy</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-tertiary)" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
           </div>
-          <div className={styles.statValue}>68%</div>
-          <div className={styles.progressBar}><div className={styles.progressFill} style={{width:'68%', backgroundColor:'var(--color-tertiary)'}}></div></div>
+          <div className={styles.statValue}>{stats?.avgEnergy || 0}%</div>
+          <div className={styles.progressBar}><div className={styles.progressFill} style={{width:`${stats?.avgEnergy || 0}%`, backgroundColor:'var(--color-tertiary)'}}></div></div>
         </div>
         
         <div className={`${styles.statCard} ${styles.generateCard}`}>
