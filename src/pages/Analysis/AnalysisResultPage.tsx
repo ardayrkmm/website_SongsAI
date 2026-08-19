@@ -60,11 +60,20 @@ export const AnalysisResultPage = () => {
   }
 
   // Fallback to dummy data if not found in DB (for presentation)
-  const displayData = data || {
+  const displayData: AnalysisRecord = data || {
+    userId: 'guest',
+    trackId: 'blinding-lights',
+    createdAt: new Date(),
     trackTitle: 'Blinding Lights',
     artistName: 'The Weeknd',
     vibe: 'ENERGETIC',
     confidence: 94,
+    predictions: [
+      { label: 'ENERGETIC', probability: 94 },
+      { label: 'EUPHORIC', probability: 5 },
+      { label: 'CHILL', probability: 1 }
+    ],
+    metrics: { energy: 90, danceability: 85, valence: 65, tempo: 100, acousticness: 25, instrumentalness: 10 },
     insights: {
       rhythm: 'Synthesizer-driven beat structure driving a consistent high tempo suitable for active listening.',
       movement: 'Prominent 4/4 kick pattern with clear syncopation makes this highly conducive to physical movement.',
@@ -135,33 +144,17 @@ export const AnalysisResultPage = () => {
             </div>
             
             <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '4px' }}>
-                  <span style={{ color: 'var(--color-on-surface)' }}>{displayData.vibe}</span>
-                  <span style={{ color: 'var(--color-on-surface-variant)' }}>{displayData.confidence}%</span>
+              {(displayData.predictions || []).slice(0,3).map((pred: {label: string; probability: number}, idx: number) => (
+                <div key={idx}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '4px' }}>
+                    <span style={{ color: 'var(--color-on-surface)' }}>{pred.label}</span>
+                    <span style={{ color: 'var(--color-on-surface-variant)' }}>{pred.probability}%</span>
+                  </div>
+                  <div style={{ height: '6px', backgroundColor: 'var(--color-surface-container-high)', borderRadius: '3px', overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${pred.probability}%`, backgroundColor: idx === 0 ? 'var(--color-primary)' : idx === 1 ? 'var(--color-secondary)' : 'var(--color-tertiary)' }}></div>
+                  </div>
                 </div>
-                <div style={{ height: '6px', backgroundColor: 'var(--color-surface-container-high)', borderRadius: '3px', overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${displayData.confidence}%`, backgroundColor: 'var(--color-primary)' }}></div>
-                </div>
-              </div>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '4px' }}>
-                  <span style={{ color: 'var(--color-on-surface)' }}>Secondary Mood</span>
-                  <span style={{ color: 'var(--color-on-surface-variant)' }}>{Math.floor(displayData.confidence * 0.4)}%</span>
-                </div>
-                <div style={{ height: '6px', backgroundColor: 'var(--color-surface-container-high)', borderRadius: '3px', overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${displayData.confidence * 0.4}%`, backgroundColor: 'var(--color-secondary)' }}></div>
-                </div>
-              </div>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '4px' }}>
-                  <span style={{ color: 'var(--color-on-surface)' }}>Alternative Category</span>
-                  <span style={{ color: 'var(--color-on-surface-variant)' }}>{Math.floor(displayData.confidence * 0.15)}%</span>
-                </div>
-                <div style={{ height: '6px', backgroundColor: 'var(--color-surface-container-high)', borderRadius: '3px', overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${displayData.confidence * 0.15}%`, backgroundColor: 'var(--color-tertiary)' }}></div>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>

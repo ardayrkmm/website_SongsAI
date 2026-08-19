@@ -11,6 +11,7 @@ export interface AnalysisRecord {
   previewUrl?: string;
   vibe: string;
   confidence: number;
+  predictions?: { label: string; probability: number }[];
   metrics: {
     energy: number;
     danceability: number;

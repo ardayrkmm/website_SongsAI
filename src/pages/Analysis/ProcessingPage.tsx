@@ -2,16 +2,32 @@ import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { saveAnalysisResult } from '../../services/db/analysisService';
+import { predictionService } from '../../features/analysis/services/predictionService';
+import { useMusicModel } from '../../features/analysis/hooks/useMusicModel';
+import { getAudioFeaturesForTrack } from '../../features/analysis/utils/featureMapper';
 import styles from './ProcessingPage.module.css';
 
 export const ProcessingPage = () => {
   const [progress, setProgress] = useState(0);
+  const [loadingText, setLoadingText] = useState('Preparing AI model...');
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
   const isSaving = useRef(false);
+  const { status: modelStatus, error: modelError } = useMusicModel();
 
   useEffect(() => {
+    if (modelStatus === 'error') {
+      setLoadingText(modelError || 'Error loading AI model. Please retry.');
+      return;
+    }
+    
+    if (modelStatus !== 'ready') {
+      return; // wait for model
+    }
+
+    setLoadingText('Analyzing song characteristics...');
+    
     const interval = setInterval(async () => {
       setProgress((prev) => {
         if (prev >= 100) {
@@ -21,36 +37,43 @@ export const ProcessingPage = () => {
             isSaving.current = true;
             
             const track = location.state?.track;
+            const trackId = track?.id || 'blinding-lights';
             
-            // Generate dummy analysis data and save to DB
-            const dummyData = {
-              trackId: track?.id || 'blinding-lights',
-              trackTitle: track?.name || 'Blinding Lights',
-              artistName: track?.artist || 'The Weeknd',
-              coverUrl: track?.coverUrl || '',
-              previewUrl: track?.previewUrl || '',
-              vibe: 'ENERGETIC',
-              confidence: 94,
-              metrics: {
-                energy: 90,
-                danceability: 85,
-                valence: 65,
-                tempo: 100,
-                acousticness: 25,
-                instrumentalness: 10
-              },
-              insights: {
-                rhythm: 'High-energy rhythmic profile',
-                movement: 'Strong danceability',
-                mood: 'Uplifting Melancholy'
-              }
-            };
+            // 1. Get Features
+            const features = getAudioFeaturesForTrack(trackId);
             
-            saveAnalysisResult(user.uid, dummyData).then((id) => {
-              navigate(`/analyze/result?id=${id}`);
-            }).catch(() => {
-              // fallback
-              navigate('/analyze/result');
+            // 2. TFJS Prediction Inference
+            predictionService.predict(features).then(predictionResult => {
+              
+              const analysisData = {
+                trackId,
+                trackTitle: track?.name || 'Blinding Lights',
+                artistName: track?.artist || 'The Weeknd',
+                coverUrl: track?.coverUrl || '',
+                previewUrl: track?.previewUrl || '',
+                vibe: predictionResult.predictedClass,
+                confidence: predictionResult.confidence,
+                predictions: predictionResult.predictions,
+                metrics: {
+                  energy: Math.round(features.energy * 100),
+                  danceability: Math.round(features.danceability * 100),
+                  valence: Math.round(features.valence * 100),
+                  tempo: Math.round(features.tempo),
+                  acousticness: Math.round(features.acousticness * 100),
+                  instrumentalness: Math.round(features.instrumentalness * 100)
+                },
+                insights: {
+                  rhythm: `Analyzed tempo at ${Math.round(features.tempo)} BPM.`,
+                  movement: `Danceability score of ${Math.round(features.danceability * 100)}%.`,
+                  mood: predictionResult.predictedClass + ' profile detected.'
+                }
+              };
+              
+              saveAnalysisResult(user.uid, analysisData).then((id) => {
+                navigate(`/analyze/result?id=${id}`);
+              }).catch(() => {
+                navigate('/analyze/result');
+              });
             });
           } else if (!user) {
             navigate('/analyze/result');
@@ -58,14 +81,13 @@ export const ProcessingPage = () => {
           
           return 100;
         }
-        // Random increment between 1 and 15
         const increment = Math.floor(Math.random() * 15) + 1;
         return Math.min(prev + increment, 100);
       });
-    }, 300);
+    }, 200);
 
     return () => clearInterval(interval);
-  }, [navigate, user]);
+  }, [navigate, user, modelStatus]);
 
   return (
     <div className={styles.container}>
@@ -82,7 +104,7 @@ export const ProcessingPage = () => {
         </svg>
         <div className={styles.percentage}>{progress}%</div>
       </div>
-      <p className={styles.text}>Please wait while Sonora AI processes your track.</p>
+      <p className={styles.text}>{loadingText}</p>
     </div>
   );
 };
