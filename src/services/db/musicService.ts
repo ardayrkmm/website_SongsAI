@@ -1,4 +1,4 @@
-import { collection, doc, setDoc, deleteDoc, getDocs, getDoc, query, where, Timestamp } from 'firebase/firestore';
+import { collection, doc, setDoc, deleteDoc, getDocs, getDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import type { SpotifyTrack } from '../api/spotifyService';
 

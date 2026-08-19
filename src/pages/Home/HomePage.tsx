@@ -1,7 +1,8 @@
 import styles from './HomePage.module.css';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { getFavoriteSongs, SavedTrack } from '../../services/db/musicService';
+import { getFavoriteSongs } from '../../services/db/musicService';
+import type { SavedTrack } from '../../services/db/musicService';
 import { SearchIcon } from '../../components/ui/Icons';
 
 export const HomePage = () => {
