@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { createUserWithEmailAndPassword, updateProfile, signInWithPopup } from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile, signInWithPopup, sendEmailVerification } from 'firebase/auth';
 import { auth, googleProvider } from '../../lib/firebase';
 import styles from './Auth.module.css';
 
@@ -20,6 +20,13 @@ export const RegisterPage = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       // Update display name
       await updateProfile(userCredential.user, { displayName: name });
+      
+      // Send verification email
+      await sendEmailVerification(userCredential.user);
+      
+      // Optionally alert the user
+      alert('Registration successful! Please check your email to verify your account.');
+      
       navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Failed to create an account');
