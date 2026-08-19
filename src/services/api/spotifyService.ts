@@ -11,10 +11,15 @@ export interface SpotifyTrack {
   features?: {
     danceability: number;
     energy: number;
-    valence: number;
-    tempo: number;
+    key: number;
+    loudness: number;
+    mode: number;
+    speechiness: number;
     acousticness: number;
     instrumentalness: number;
+    liveness: number;
+    valence: number;
+    tempo: number;
   };
 }
 
