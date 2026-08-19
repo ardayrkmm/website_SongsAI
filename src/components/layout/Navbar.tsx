@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import styles from './Navbar.module.css';
 import { SearchIcon, BellIcon, SettingsIcon, UserIcon } from '../ui/Icons';
 
@@ -14,10 +15,10 @@ export const Navbar = () => {
         </div>
 
         <div className={styles.desktopLinks}>
-          <a href="#" className={styles.active}>Home</a>
-          <a href="#">Explore</a>
-          <a href="#">Analyze</a>
-          <a href="#">Music Universe</a>
+          <Link to="/" className={styles.active}>Home</Link>
+          <Link to="/explore">Explore</Link>
+          <Link to="/analyze">Analyze</Link>
+          <Link to="/dashboard">Dashboard</Link>
         </div>
 
         <div className={styles.actions}>

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import styles from './HeroSection.module.css';
 import { BarChartIcon, CompassIcon } from '../../components/ui/Icons';
 
@@ -22,12 +23,12 @@ export const HeroSection = () => {
         </p>
         
         <div className={styles.actions}>
-          <button className={styles.primaryButton}>
+          <Link to="/analyze" className={styles.primaryButton}>
             <BarChartIcon /> Analyze a Song
-          </button>
-          <button className={styles.secondaryButton}>
+          </Link>
+          <Link to="/explore" className={styles.secondaryButton}>
             <CompassIcon /> Explore Music
-          </button>
+          </Link>
         </div>
       </div>
       

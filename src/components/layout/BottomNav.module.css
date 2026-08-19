@@ -27,7 +27,7 @@
   font-weight: 500;
 }
 
-.navItem[data-active="true"] {
+.active {
   color: var(--color-secondary);
 }
 

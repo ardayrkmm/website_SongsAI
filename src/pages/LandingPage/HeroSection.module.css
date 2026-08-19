@@ -83,6 +83,7 @@
   cursor: pointer;
   transition: all 0.2s;
   font-family: var(--font-family-base);
+  text-decoration: none;
 }
 
 .primaryButton {
