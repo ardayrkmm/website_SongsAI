@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import styles from './Sidebar.module.css';
@@ -5,6 +6,11 @@ import { HomeIcon, CompassIcon, BarChartIcon, GlobeIcon, UserIcon, SettingsIcon 
 
 export const Sidebar = () => {
   const { user, logout } = useAuth();
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notifications = [
+    { id: 1, title: 'Analysis Complete', desc: 'DNA for "Blinding Lights" is ready.', time: '2m ago' },
+    { id: 2, title: 'New Persona', desc: 'You are now "The Night Explorer".', time: '1h ago' },
+  ];
   return (
     <aside className={styles.sidebar}>
       <div className={styles.header}>
@@ -53,21 +59,45 @@ export const Sidebar = () => {
           <SettingsIcon />
           <span>Settings</span>
         </NavLink>
-        <button className={styles.navItem} onClick={() => alert('Notifications System: No new alerts.')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left', width: '100%', position: 'relative' }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-          </svg>
-          <span>Notifications</span>
-          <div style={{
-            position: 'absolute',
-            right: '16px',
-            width: '8px',
-            height: '8px',
-            backgroundColor: 'var(--color-primary)',
-            borderRadius: '50%'
-          }}></div>
-        </button>
+        <div style={{ position: 'relative' }}>
+          <button 
+            className={styles.navItem} 
+            onClick={() => setShowNotifications(!showNotifications)} 
+            style={{ background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left', width: '100%', position: 'relative', outline: 'none' }}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span style={{flex: 1}}>Notifications</span>
+            <div style={{
+              width: '8px',
+              height: '8px',
+              backgroundColor: 'var(--color-primary)',
+              borderRadius: '50%'
+            }}></div>
+          </button>
+          
+          {showNotifications && (
+            <div style={{
+              position: 'absolute', bottom: '100%', left: '0', width: '100%', marginBottom: '8px',
+              backgroundColor: 'var(--color-surface-container-high)', borderRadius: '12px',
+              border: '1px solid var(--color-outline-variant)', overflow: 'hidden', zIndex: 100,
+              boxShadow: 'var(--shadow-level-2)'
+            }}>
+              <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-outline-variant)', fontWeight: 600, fontSize: '13px' }}>Notifications</div>
+              <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                {notifications.map(n => (
+                  <div key={n.id} style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-surface-container-lowest)', cursor: 'pointer' }}>
+                    <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-on-surface)' }}>{n.title}</div>
+                    <div style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)', marginTop: '4px' }}>{n.desc}</div>
+                    <div style={{ fontSize: '10px', color: 'var(--color-primary)', marginTop: '6px' }}>{n.time}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
         
         <NavLink to="/profile" className={styles.userProfile} style={{textDecoration: 'none'}}>
           <div className={styles.avatarWrap}>

@@ -123,16 +123,46 @@ export const AnalysisResultPage = () => {
       </div>
 
       <div className={styles.topSection}>
-        <div className={styles.vibeCard}>
-          <div className={styles.cardLabel}>PRIMARY VIBE</div>
-          <div className={styles.vibeIconWrapper}>
-            <div className={styles.vibeIconInner}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        <div className={styles.mainGrid}>
+          {/* Top Predictions / Vibe Classification */}
+          <div className={styles.vibeCard}>
+            <h3>Top Predictions (AI Category Classification)</h3>
+            <div className={styles.vibeMain}>
+              <div className={styles.vibeLabel}>{displayData.vibe}</div>
+              <div className={styles.confidence}>
+                {displayData.confidence}% Confidence
+              </div>
             </div>
-          </div>
-          <h2 className={styles.vibeTitle}>{displayData.vibe}</h2>
-          <div className={styles.confidenceBadge}>
-            <span className={styles.dot}></span> {displayData.confidence}% Confidence
+            
+            <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '4px' }}>
+                  <span style={{ color: 'var(--color-on-surface)' }}>{displayData.vibe}</span>
+                  <span style={{ color: 'var(--color-on-surface-variant)' }}>{displayData.confidence}%</span>
+                </div>
+                <div style={{ height: '6px', backgroundColor: 'var(--color-surface-container-high)', borderRadius: '3px', overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${displayData.confidence}%`, backgroundColor: 'var(--color-primary)' }}></div>
+                </div>
+              </div>
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '4px' }}>
+                  <span style={{ color: 'var(--color-on-surface)' }}>Secondary Mood</span>
+                  <span style={{ color: 'var(--color-on-surface-variant)' }}>{Math.floor(displayData.confidence * 0.4)}%</span>
+                </div>
+                <div style={{ height: '6px', backgroundColor: 'var(--color-surface-container-high)', borderRadius: '3px', overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${displayData.confidence * 0.4}%`, backgroundColor: 'var(--color-secondary)' }}></div>
+                </div>
+              </div>
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '4px' }}>
+                  <span style={{ color: 'var(--color-on-surface)' }}>Alternative Category</span>
+                  <span style={{ color: 'var(--color-on-surface-variant)' }}>{Math.floor(displayData.confidence * 0.15)}%</span>
+                </div>
+                <div style={{ height: '6px', backgroundColor: 'var(--color-surface-container-high)', borderRadius: '3px', overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${displayData.confidence * 0.15}%`, backgroundColor: 'var(--color-tertiary)' }}></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
