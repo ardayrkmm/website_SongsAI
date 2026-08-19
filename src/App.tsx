@@ -7,6 +7,9 @@ import { AnalysisPage } from './pages/Analysis/AnalysisPage';
 import { ProcessingPage } from './pages/Analysis/ProcessingPage';
 import { AnalysisResultPage } from './pages/Analysis/AnalysisResultPage';
 import { PersonalityPage } from './pages/Personality/PersonalityPage';
+import { PersonalitySetupPage } from './pages/Personality/PersonalitySetupPage';
+import { ProfilePage } from './pages/Profile/ProfilePage';
+import { SettingsPage } from './pages/Settings/SettingsPage';
 import './styles/App.css';
 
 function App() {
@@ -23,10 +26,14 @@ function App() {
           <Route path="/analyze" element={<AnalysisPage />} />
           <Route path="/processing" element={<ProcessingPage />} />
           <Route path="/analyze/result" element={<AnalysisResultPage />} />
-          <Route path="/personality" element={<PersonalityPage />} />
+          <Route path="/personality/report" element={<PersonalityPage />} />
+          <Route path="/personality/setup" element={<PersonalitySetupPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/settings" element={<SettingsPage />} />
           
           {/* Placeholder for other nav items */}
           <Route path="/universe" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/personality" element={<Navigate to="/profile" replace />} />
         </Route>
 
         {/* Fallback route */}
