@@ -6,6 +6,7 @@ import type { SavedTrack } from '../../services/db/musicService';
 import { getUserStatistics } from '../../services/db/analysisService';
 import type { UserMusicStats } from '../../services/db/analysisService';
 import { SearchIcon } from '../../components/ui/Icons';
+import { EmptyState } from '../../components/ui/EmptyState';
 
 export const HomePage = () => {
   const { user } = useAuth();
@@ -114,7 +115,12 @@ export const HomePage = () => {
                 </div>
               </div>
             )) : (
-              <p style={{color: 'var(--color-on-surface-variant)'}}>You haven't saved any tracks yet.</p>
+              <EmptyState 
+                title="No saved tracks" 
+                description="Your favorite tracks will appear here once you analyze and save them." 
+                actionText="Explore Tracks"
+                actionLink="/explore"
+              />
             )}
           </div>
         )}
