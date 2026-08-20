@@ -100,6 +100,45 @@ export const AnalysisResultPage = () => {
     }
   };
 
+  // Calculate dynamic radar chart points based on metrics!
+  const calculateRadarPoints = () => {
+    const categories = ['energy', 'danceability', 'valence', 'tempo', 'acousticness', 'instrumentalness'];
+    
+    const getVal = (cat: string) => {
+      let val = (displayData.metrics as any)[cat] || 0;
+      if (cat === 'tempo') {
+        // Normalize Tempo (assumed 60 to 200 BPM) to 0-100%
+        val = Math.max(0, Math.min(100, ((val - 60) / 140) * 100));
+      }
+      return val / 100;
+    };
+
+    const radius = 80;
+    const centerX = 100;
+    const centerY = 100;
+    
+    return categories.map((cat, i) => {
+      const angle = (Math.PI / 3) * i - (Math.PI / 2); // Start at -90 deg (top), move clockwise
+      const val = getVal(cat);
+      const r = radius * val;
+      const x = centerX + r * Math.cos(angle);
+      const y = centerY + r * Math.sin(angle);
+      return { x, y };
+    });
+  };
+
+  const dynamicPoints = calculateRadarPoints();
+  const polygonPointsString = dynamicPoints.map(p => `${p.x},${p.y}`).join(' ');
+
+  const getRhythmTitle = (tempo: number) => tempo > 120 ? 'Fast-paced & Driving' : (tempo > 90 ? 'Steady & Groovy' : 'Slow & Atmospheric');
+  const getMovementTitle = (dance: number) => dance > 70 ? 'Highly Danceable' : (dance > 40 ? 'Moderate Groove' : 'Not for dancing');
+  const getMoodTitle = (vibe: string) => {
+    if (vibe === 'EUPHORIC') return 'Bright & Uplifting';
+    if (vibe === 'ENERGETIC') return 'Intense & Powerful';
+    if (vibe === 'CHILL') return 'Relaxed & Calm';
+    return 'Deep & Emotional';
+  };
+
   return (
     <div className={styles.container}>
       <Link to="/analyze" className={styles.backLink}>
@@ -127,54 +166,38 @@ export const AnalysisResultPage = () => {
           )}
         </div>
         
-        {user && data && (
-          <button 
-            onClick={handleToggleFavorite}
-            style={{
-              background: 'transparent', 
-              border: '1px solid var(--color-outline-variant)',
-              borderRadius: '8px',
-              padding: '8px 16px',
-              color: isFavorite ? 'var(--color-primary)' : 'var(--color-on-surface)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill={isFavorite ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
+
+        {user && (
+          <button className={`${styles.saveBtn} ${isFavorite ? styles.saved : ''}`} onClick={handleToggleFavorite}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill={isFavorite ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
             </svg>
-            {isFavorite ? 'Saved to Favorites' : 'Save Song'}
+            {isFavorite ? 'Saved to Profile' : 'Save Song'}
           </button>
         )}
       </div>
 
-      <div className={styles.topSection}>
-        <div className={styles.mainGrid}>
-          {/* Top Predictions / Vibe Classification */}
-          <div className={styles.vibeCard}>
-            <h3>Top Predictions (AI Category Classification)</h3>
-            <div className={styles.vibeMain}>
-              <div className={styles.vibeLabel}>{displayData.vibe}</div>
-              <div className={styles.confidence}>
-                {displayData.confidence}% Confidence
-              </div>
-            </div>
-            
-            <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {(displayData.predictions || []).slice(0,3).map((pred: {label: string; probability: number}, idx: number) => (
-                <div key={idx}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '4px' }}>
-                    <span style={{ color: 'var(--color-on-surface)' }}>{pred.label}</span>
-                    <span style={{ color: 'var(--color-on-surface-variant)' }}>{pred.probability}%</span>
-                  </div>
-                  <div style={{ height: '6px', backgroundColor: 'var(--color-surface-container-high)', borderRadius: '3px', overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${pred.probability}%`, backgroundColor: idx === 0 ? 'var(--color-primary)' : idx === 1 ? 'var(--color-secondary)' : 'var(--color-tertiary)' }}></div>
-                  </div>
+      <div className={styles.mainGrid}>
+        <div className={styles.predictionsCard}>
+          <h3>Top Predictions (AI Category Classification)</h3>
+          
+          <div className={styles.primaryPrediction}>
+            <span className={styles.primaryClass}>{displayData.vibe}</span>
+            <span className={styles.primaryConfidence}>{displayData.confidence}% Confidence</span>
+          </div>
+          
+          <div className={styles.barsList}>
+            {(displayData.predictions || []).slice(0, 3).map((pred, i) => (
+              <div key={pred.label + i} className={styles.barItem}>
+                <div className={styles.barHeader}>
+                  <span className={styles.barLabel}>{pred.label}</span>
+                  <span className={styles.barValue}>{pred.probability}%</span>
                 </div>
-              ))}
-            </div>
+                <div className={styles.barBg}>
+                  <div className={styles.barFill} style={{ width: `${pred.probability}%`, backgroundColor: i === 0 ? 'var(--color-secondary)' : i === 1 ? 'var(--color-tertiary)' : 'var(--color-outline)' }}></div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -188,7 +211,6 @@ export const AnalysisResultPage = () => {
           </div>
           
           <div className={styles.radarWrapper}>
-            {/* Mock Radar Chart using SVG */}
             <svg viewBox="0 0 200 200" className={styles.radarChart}>
               <polygon points="100,20 180,60 180,140 100,180 20,140 20,60" className={styles.radarGrid} />
               <polygon points="100,50 150,75 150,125 100,150 50,125 50,75" className={styles.radarGrid} />
@@ -199,13 +221,10 @@ export const AnalysisResultPage = () => {
               <line x1="100" y1="100" x2="20" y2="140" className={styles.radarAxis} />
               <line x1="100" y1="100" x2="20" y2="60" className={styles.radarAxis} />
               
-              <polygon points="100,20 160,80 160,150 100,180 30,130 40,50" className={styles.radarData} />
-              <circle cx="100" cy="20" r="4" className={styles.radarPoint} />
-              <circle cx="160" cy="80" r="4" className={styles.radarPoint} />
-              <circle cx="160" cy="150" r="4" className={styles.radarPoint} />
-              <circle cx="100" cy="180" r="4" className={styles.radarPoint} />
-              <circle cx="30" cy="130" r="4" className={styles.radarPoint} />
-              <circle cx="40" cy="50" r="4" className={styles.radarPoint} />
+              <polygon points={polygonPointsString} className={styles.radarData} />
+              {dynamicPoints.map((p, idx) => (
+                <circle key={idx} cx={p.x} cy={p.y} r="4" className={styles.radarPoint} />
+              ))}
             </svg>
             
             <span className={styles.radarLabel} style={{top: '0', left: '50%', transform: 'translate(-50%, -100%)'}}>ENERGY</span>
@@ -226,7 +245,7 @@ export const AnalysisResultPage = () => {
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
               RHYTHM
             </div>
-            <h3>High-energy rhythmic profile</h3>
+            <h3>{getRhythmTitle(displayData.metrics.tempo)}</h3>
             <p>{displayData.insights.rhythm}</p>
           </div>
           
@@ -235,7 +254,7 @@ export const AnalysisResultPage = () => {
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
               MOVEMENT
             </div>
-            <h3>Strong danceability</h3>
+            <h3>{getMovementTitle(displayData.metrics.danceability)}</h3>
             <p>{displayData.insights.movement}</p>
           </div>
           
@@ -244,7 +263,7 @@ export const AnalysisResultPage = () => {
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
               MOOD
             </div>
-            <h3>Emotional Complex</h3>
+            <h3>{getMoodTitle(displayData.vibe)}</h3>
             <p>{displayData.insights.mood}</p>
           </div>
         </div>
