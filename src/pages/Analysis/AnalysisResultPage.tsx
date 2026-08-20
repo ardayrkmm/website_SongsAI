@@ -18,19 +18,38 @@ export const AnalysisResultPage = () => {
 
   useEffect(() => {
     const fetchAnalysis = async () => {
+      // 1. Prioritize data passed via React Router state (essential if Firebase save fails or guest mode)
+      if (location.state?.analysisData) {
+        const result = location.state.analysisData as AnalysisRecord;
+        setData(result);
+        if (user && result.id) {
+          const fav = await checkIsFavorited(user.uid, result.trackId);
+          setIsFavorite(fav);
+        }
+        const recs = await getRecommendationsByArtist(result.artistName, 3);
+        setSimilarTracks(recs);
+        setLoading(false);
+        return;
+      }
+
+      // 2. Fallback to fetching from Firebase using ID
       const params = new URLSearchParams(location.search);
       const id = params.get('id');
       
       if (id) {
-        const result = await getAnalysisResult(id);
-        if (result) {
-          setData(result);
-          if (user) {
-            const fav = await checkIsFavorited(user.uid, result.trackId);
-            setIsFavorite(fav);
+        try {
+          const result = await getAnalysisResult(id);
+          if (result) {
+            setData(result);
+            if (user) {
+              const fav = await checkIsFavorited(user.uid, result.trackId);
+              setIsFavorite(fav);
+            }
+            const recs = await getRecommendationsByArtist(result.artistName, 3);
+            setSimilarTracks(recs);
           }
-          const recs = await getRecommendationsByArtist(result.artistName, 3);
-          setSimilarTracks(recs);
+        } catch (err) {
+          console.error("Failed to fetch analysis result from DB:", err);
         }
       }
       setLoading(false);

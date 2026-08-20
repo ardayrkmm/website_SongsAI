@@ -27,71 +27,73 @@ export const ProcessingPage = () => {
     }
 
     setLoadingText('Analyzing song characteristics...');
-    
-    const interval = setInterval(async () => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          
-          if (!isSaving.current && user) {
-            isSaving.current = true;
+        const interval = setInterval(() => {
+        setProgress(prev => {
+          if (prev >= 90) {
+            setLoadingText('Finalizing results...');
+            clearInterval(interval);
             
-            const track = location.state?.track;
-            const trackId = track?.id || 'blinding-lights';
-            
-            // 1. Get Features
-            let features;
-            if (track?.features) {
-              // Use REAL features straight from the dataset!
-              features = track.features;
-            } else {
-              // Fallback
-              features = getAudioFeaturesForTrack(trackId);
+            if (!isSaving.current) {
+              isSaving.current = true;
+              
+              const track = location.state?.track;
+              const trackId = track?.id || 'blinding-lights';
+              
+              // 1. Get Features
+              let features;
+              if (track?.features) {
+                features = track.features;
+              } else {
+                features = getAudioFeaturesForTrack(trackId);
+              }
+              
+              // 2. TFJS Prediction Inference
+              predictionService.predict(features).then(predictionResult => {
+                
+                const analysisData = {
+                  trackId,
+                  trackTitle: track?.name || 'Blinding Lights',
+                  artistName: track?.artist || 'The Weeknd',
+                  coverUrl: track?.coverUrl || '',
+                  previewUrl: track?.previewUrl || '',
+                  vibe: predictionResult.predictedClass,
+                  confidence: predictionResult.confidence,
+                  predictions: predictionResult.predictions,
+                  metrics: {
+                    energy: Math.round(features.energy * 100),
+                    danceability: Math.round(features.danceability * 100),
+                    valence: Math.round(features.valence * 100),
+                    tempo: Math.round(features.tempo),
+                    acousticness: Math.round(features.acousticness * 100),
+                    instrumentalness: Math.round(features.instrumentalness * 100)
+                  },
+                  insights: {
+                    rhythm: `Analyzed tempo at ${Math.round(features.tempo)} BPM.`,
+                    movement: `Danceability score of ${Math.round(features.danceability * 100)}%.`,
+                    mood: predictionResult.predictedClass + ' profile detected.'
+                  }
+                };
+                
+                if (user) {
+                  saveAnalysisResult(user.uid, analysisData).then((id) => {
+                    navigate(`/analyze/result?id=${id}`, { state: { analysisData } });
+                  }).catch((err) => {
+                    console.error("Firebase save failed, falling back to local state", err);
+                    navigate('/analyze/result', { state: { analysisData } });
+                  });
+                } else {
+                  // Guest mode
+                  navigate('/analyze/result', { state: { analysisData } });
+                }
+              });
             }
             
-            // 2. TFJS Prediction Inference
-            predictionService.predict(features).then(predictionResult => {
-              
-              const analysisData = {
-                trackId,
-                trackTitle: track?.name || 'Blinding Lights',
-                artistName: track?.artist || 'The Weeknd',
-                coverUrl: track?.coverUrl || '',
-                previewUrl: track?.previewUrl || '',
-                vibe: predictionResult.predictedClass,
-                confidence: predictionResult.confidence,
-                predictions: predictionResult.predictions,
-                metrics: {
-                  energy: Math.round(features.energy * 100),
-                  danceability: Math.round(features.danceability * 100),
-                  valence: Math.round(features.valence * 100),
-                  tempo: Math.round(features.tempo),
-                  acousticness: Math.round(features.acousticness * 100),
-                  instrumentalness: Math.round(features.instrumentalness * 100)
-                },
-                insights: {
-                  rhythm: `Analyzed tempo at ${Math.round(features.tempo)} BPM.`,
-                  movement: `Danceability score of ${Math.round(features.danceability * 100)}%.`,
-                  mood: predictionResult.predictedClass + ' profile detected.'
-                }
-              };
-              
-              saveAnalysisResult(user.uid, analysisData).then((id) => {
-                navigate(`/analyze/result?id=${id}`);
-              }).catch(() => {
-                navigate('/analyze/result');
-              });
-            });
-          } else if (!user) {
-            navigate('/analyze/result');
+            return 100;
           }
-          
-          return 100;
-        }
-        const increment = Math.floor(Math.random() * 15) + 1;
-        return Math.min(prev + increment, 100);
-      });
-    }, 200);
+          const increment = Math.floor(Math.random() * 15) + 1;
+          return Math.min(prev + increment, 100);
+        });
+      }, 200);
 
     return () => clearInterval(interval);
   }, [navigate, user, modelStatus]);
