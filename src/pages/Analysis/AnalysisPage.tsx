@@ -1,12 +1,21 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useMusicModel } from '../../features/analysis/hooks/useMusicModel';
 import type { SpotifyTrack } from '../../services/api/spotifyService';
 import styles from './AnalysisPage.module.css';
 
 export const AnalysisPage = () => {
-  const { tracks, loading } = useMusicModel();
+  const [tracks, setTracks] = useState<SpotifyTrack[]>([]);
+  const [loading, setLoading] = useState(true);
   const [randomTrack, setRandomTrack] = useState<SpotifyTrack | null>(null);
+
+  useEffect(() => {
+    fetch('/songs_db.json')
+      .then(res => res.json())
+      .then(data => {
+        setTracks(data);
+        setLoading(false);
+      });
+  }, []);
 
   useEffect(() => {
     if (!loading && tracks.length > 0 && !randomTrack) {
