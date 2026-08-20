@@ -2,12 +2,12 @@ import { useState, useRef, useEffect } from 'react';
 import type { MouseEvent } from 'react';
 import styles from './MusicUniversePage.module.css';
 
-// Mock data generation for the clustering map
+// Cluster definitions matching our AI Vibe Model
 const CLUSTERS = [
-  { id: 'energetic', name: 'High Energy / Driving', color: '#ff5e5e', centerX: 70, centerY: 30 },
-  { id: 'melancholic', name: 'Melancholic / Deep', color: '#5e94ff', centerX: 25, centerY: 70 },
-  { id: 'chill', name: 'Chill / Atmospheric', color: '#4ecc71', centerX: 75, centerY: 75 },
-  { id: 'euphoric', name: 'Euphoric / Uplifting', color: '#c0c1ff', centerX: 30, centerY: 30 }
+  { id: 'Energetic', name: 'High Energy / Driving', color: '#ff5e5e' },
+  { id: 'Melancholic', name: 'Melancholic / Deep', color: '#5e94ff' },
+  { id: 'Chill', name: 'Chill / Atmospheric', color: '#4ecc71' },
+  { id: 'Euphoric', name: 'Euphoric / Uplifting', color: '#c0c1ff' }
 ];
 
 interface NodeData {
@@ -20,31 +20,11 @@ interface NodeData {
   size: number;
 }
 
-const generateMockNodes = (count: number): NodeData[] => {
-  const nodes: NodeData[] = [];
-  for (let i = 0; i < count; i++) {
-    const cluster = CLUSTERS[Math.floor(Math.random() * CLUSTERS.length)];
-    // Add random spread around cluster center (Gaussian-ish)
-    const offsetX = (Math.random() + Math.random() + Math.random() - 1.5) * 20;
-    const offsetY = (Math.random() + Math.random() + Math.random() - 1.5) * 20;
-    
-    nodes.push({
-      id: `node-${i}`,
-      title: `Track ${i + 1}`,
-      artist: `Artist ${String.fromCharCode(65 + (i % 26))}`,
-      cluster: cluster.id,
-      x: Math.max(5, Math.min(95, cluster.centerX + offsetX)),
-      y: Math.max(5, Math.min(95, cluster.centerY + offsetY)),
-      size: Math.random() * 8 + 4 // Size between 4 and 12
-    });
-  }
-  return nodes;
-};
-
 export const MusicUniversePage = () => {
   const [nodes, setNodes] = useState<NodeData[]>([]);
   const [filter, setFilter] = useState('all');
   const [hoveredNode, setHoveredNode] = useState<NodeData | null>(null);
+  const [loading, setLoading] = useState(true);
   
   // Pan and zoom state
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -52,8 +32,32 @@ export const MusicUniversePage = () => {
   const dragStart = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
-    // Generate 150 points for the map
-    setNodes(generateMockNodes(150));
+    // Fetch real data from the local JSON DB
+    const loadRealData = async () => {
+      try {
+        const response = await fetch('/songs_db.json');
+        const db = await response.json();
+        
+        // Take up to 500 songs for the map to prevent lag
+        const mapNodes = db.slice(0, 500).map((song: any) => ({
+          id: song.id,
+          title: song.name,
+          artist: song.artist,
+          cluster: song.vibe || 'Chill', // fallback
+          x: song.x !== undefined ? song.x : Math.random() * 90 + 5,
+          y: song.y !== undefined ? song.y : Math.random() * 90 + 5,
+          size: 6 // Uniform size
+        }));
+        
+        setNodes(mapNodes);
+        setLoading(false);
+      } catch (err) {
+        console.error("Failed to load map data", err);
+        setLoading(false);
+      }
+    };
+    
+    loadRealData();
   }, []);
 
   const handleMouseDown = (e: MouseEvent) => {
@@ -108,34 +112,40 @@ export const MusicUniversePage = () => {
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
       >
-        <div 
-          style={{
-            position: 'absolute',
-            top: 0, left: 0, right: 0, bottom: 0,
-            transform: `translate(${pan.x}px, ${pan.y}px)`,
-            transition: isDragging ? 'none' : 'transform 0.1s ease-out'
-          }}
-        >
-          {visibleNodes.map(node => {
-            const clusterDef = CLUSTERS.find(c => c.id === node.cluster);
-            return (
-              <div
-                key={node.id}
-                className={styles.node}
-                style={{
-                  left: `${node.x}%`,
-                  top: `${node.y}%`,
-                  width: `${node.size}px`,
-                  height: `${node.size}px`,
-                  backgroundColor: clusterDef?.color || '#fff',
-                  opacity: filter !== 'all' && filter !== node.cluster ? 0.2 : 0.8
-                }}
-                onMouseEnter={() => setHoveredNode(node)}
-                onMouseLeave={() => setHoveredNode(null)}
-              />
-            );
-          })}
-        </div>
+        {loading ? (
+          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: 'var(--color-on-surface-variant)'}}>
+            Computing Universal Embeddings...
+          </div>
+        ) : (
+          <div 
+            style={{
+              position: 'absolute',
+              top: 0, left: 0, right: 0, bottom: 0,
+              transform: `translate(${pan.x}px, ${pan.y}px)`,
+              transition: isDragging ? 'none' : 'transform 0.1s ease-out'
+            }}
+          >
+            {visibleNodes.map(node => {
+              const clusterDef = CLUSTERS.find(c => c.id === node.cluster);
+              return (
+                <div
+                  key={node.id}
+                  className={styles.node}
+                  style={{
+                    left: `${node.x}%`,
+                    top: `${node.y}%`,
+                    width: `${node.size}px`,
+                    height: `${node.size}px`,
+                    backgroundColor: clusterDef?.color || '#fff',
+                    opacity: filter !== 'all' && filter !== node.cluster ? 0.1 : 0.85
+                  }}
+                  onMouseEnter={() => setHoveredNode(node)}
+                  onMouseLeave={() => setHoveredNode(null)}
+                />
+              );
+            })}
+          </div>
+        )}
 
         {hoveredNode && (
           <div 
